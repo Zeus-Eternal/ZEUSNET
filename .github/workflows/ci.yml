@@ -18,7 +18,7 @@ jobs:
       - name: Black check
         run: black --check .
       - name: Ruff lint
-        run: ruff .
+        run: ruff check .
       - name: Pytest
         run: pytest
       - name: Pytest coverage check (placeholder)

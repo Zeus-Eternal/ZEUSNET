@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from backend.api import scan, networks, devices, export
-from backend.alerts import anomaly, rogue_ap, mac_tracker
+from backend.api import scan, networks, devices, export, alerts, command
+from backend.c2.command_bus import start_bus
 
 app = FastAPI()
 
@@ -9,3 +9,10 @@ app.include_router(scan.router, prefix="/api")
 app.include_router(networks.router, prefix="/api")
 app.include_router(devices.router, prefix="/api")
 app.include_router(export.router, prefix="/api")
+app.include_router(alerts.router, prefix="/api")
+app.include_router(command.router, prefix="/api")
+
+
+@app.on_event("startup")
+def _startup():
+    start_bus()

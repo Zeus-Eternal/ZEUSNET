@@ -45,7 +45,7 @@ uvicorn main:app --reload
 ```bash
 cd frontend
 npm install
-npm run dev
+npm start
 ```
 
 ### Flash ESP32
@@ -82,7 +82,7 @@ ZeusNet/
 
 ## ⚠️ Mode Switching
 
-Use `.env` to toggle behavior:
+Copy `.env.example` to `.env` to toggle behavior:
 
 ```env
 ZEUSNET_MODE=SAFE

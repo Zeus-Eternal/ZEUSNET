@@ -45,7 +45,7 @@ uvicorn main:app --reload
 ```bash
 cd frontend
 npm install
-npm run dev
+npm start
 ```
 
 ### Flash ESP32

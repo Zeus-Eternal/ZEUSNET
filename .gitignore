@@ -4,7 +4,10 @@ __pycache__/
 
 # Environment
 .env
+<<<<<<< asjo25-codex/complete-and-extend-zeusnet-project-components
+=======
 /.venv
+>>>>>>> main
 
 # Node
 node_modules/
@@ -12,6 +15,9 @@ node_modules/
 # Ruff cache
 .ruff_cache/
 frontend/dist/
+<<<<<<< asjo25-codex/complete-and-extend-zeusnet-project-components
+=======
 
 # compress esp32-ZeusNet driver
 esp32-ZeusNet.zip
+>>>>>>> main

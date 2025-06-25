@@ -1,125 +1,141 @@
-# ⚡ ZEUSNET – Hybrid Esp32 + PC Tactical Recon Platform
+# ⚡ ZEUSNET: Wi‑Fi Recon & Pentest Intelligence Node
 
-> *“Not all war is visible. Some of it floats in signals and shadows.”*
+**Hybrid ESP32 + PC Tactical Framework for Cyber‑Network Diagnostics**
 
-**ZeusNet** turns an ESP32-WROOM module and a high-powered PC into a modular **Wi-Fi pentesting + recon AI node**. A Wi-Fi scanner on the surface. A command & control system beneath. Designed to observe, learn, deceive—and dominate.
+> ZeusNet is an advanced, modular Wi‑Fi surveillance and penetration testing suite. Powered by a USB‑tethered ESP32 and a high‑performance PC (RTX2080 Super + i7‑11700KF), it merges real‑time signal analytics, device tracking, and AI‑powered anomaly detection into a single unified toolkit.
 
-## 🚀 Features
+## 🔧 Features
 
-| Phase | Feature                      | Description                                         |
-|-------|------------------------------|-----------------------------------------------------|
-| 1     | 📡 Wi-Fi Scanner             | Real-time SSID/RSSI capture from ESP32             |
-| 1     | 📊 React Dashboards          | Signal strength graphs, channel heatmaps           |
-| 2     | 🌐 Captive Portal Trap       | ESP32 SoftAP with DNS hijack and spoofed login     |
-| 2     | 🧠 AI Anomaly Detection      | ML detects rogue APs, signal drops, and MAC spikes |
-| 2     | 📁 Auto Backup System        | Daily JSON/CSV dumps to `/backups`                 |
-| 2     | 📡 MAC Tracker               | First/last-seen detection with device heatmaps     |
-| 3     | 👻 Beacon Swarm (Mirage)     | ESP32 beacon flood for network noise               |
-| 3     | 🔥 Deauth & Injection (Obsidian Jammer) | TL-WN722N powered—advanced signal disruption |
-| 3     | 🧬 GPU Pattern Oracle        | LSTM anomaly detection using RTX CUDA power        |
-| 3     | 🛰 OTA Fleet Control         | OTA flash updates to ESP32 via command bus         |
-| 3     | 🕵️ Rogue AP Detection       | SSID/BSSID mismatches across zones                 |
+| Feature                      | Description                                      |
+|-----------------------------|--------------------------------------------------|
+| 🌐 Captive Portal trap       | ESP32-hosted login splash for phishing emulation |
+| 📡 MAC-based device tracking | Tracks known devices across time/geolocation     |
+| 🧠 AI anomaly detection      | Predicts unusual signal behavior with LSTM       |
+| 🕵️ Rogue AP detection       | Flags SSID duplicates with different BSSIDs      |
+| 📁 Auto backups              | Daily JSON/CSV dump of scan logs                 |
+| 📊 Export to CSV/Excel       | Click-to-export tables from React UI             |
+| 🔥 Deauth & AP cloning       | Enabled via TL‑WN722N NIC in aggressive mode     |
+| 🧪 TL‑WN722N automation      | Controlled packet injection, handshake captures  |
+| 🗺️ Heatmap dashboard         | Leaflet-powered SSID and RSSI visualization      |
 
-## 🛠 Hardware Required
+## 🧠 Architecture
 
-- **ESP32-WROOM** (primary node)
-- **TL-WN722N (AR9271)** USB Wi-Fi Adapter
-- PC with:
-  - CPU: Intel i7-11700KF
-  - GPU: RTX 2080 Super
-  - RAM: 32GB
-- Optional: ESP32-CAM, mic sensor, GPS for field deployments
-
-## 🧱 Folder Structure
-
-```plaintext
-ZeusNet/
-├── esp32/                # ESP32 firmware: scanning, portals
-├── backend/              # FastAPI + AI command core
-├── api/                  # REST endpoints
-├── alerts/               # ML, anomaly, rogue logic
-├── c2/                   # Command bus (Serial/MQTT)
-├── frontend/             # React GUI
-├── README.md             # You're reading this
+```text
+ESP32 (Spectral Scanner / Captive Portal)
+  ⮕ USB Serial
+      ⮕ FastAPI WarCore (Python 3.10+, PyTorch, Scapy, SQLite)
+        ⮕ MQTT / WebSocket Bus
+          ⮕ React Frontend (KRONOS UI) + Dashboards
+          ⮕ Optional: TL-WN722N (Monitor / Injection)
 ````
 
+## 🚀 Quick Start
 
-## 🌐 Captive Portal
-
-* ESP32 launches SoftAP
-* DNS redirects all domains to `192.168.4.1`
-* Spoofed login page POSTs to ESP32 SPIFFS
-* Transmitted to PC backend for display/storage
-
-
-## 🧠 AI Model Flow
-
-* RSSI patterns + MAC probes ingested to SQLite
-* PyTorch-based LSTM analyzes for outliers
-* Alerts generated via WebSocket
-* GPU optional (LSTM speeds up w/ CUDA)
-
-## 🧬 PC-Powered Attacks (TL-WN722N)
-
-* Monitor Mode Packet Capture
-* AP Clone + Handshake Harvesting (`aircrack-ng`)
-* Deauth Flood (`aireplay-ng`, `hcxdumptool`)
-* Real-time stream of attacks via WebSocket to UI
-* Safety Toggle: `.env → ZEUSNET_MODE=SAFE|AGGRESSIVE`
-
-
-## 🔌 Serial Command Protocol
-
-| Opcode | Direction | Purpose                  |
-| ------ | --------- | ------------------------ |
-| 0x01   | PC→ESP    | Config scan settings     |
-| 0x02   | PC→ESP    | Switch to captive portal |
-| 0x10   | ESP→PC    | Send SSID scan list      |
-| 0x11   | ESP→PC    | Send MAC probe list      |
-| 0x12   | ESP→PC    | Portal form capture      |
-| 0x30   | PC→ESP    | OTA firmware update      |
-
-## ⚙️ Build Instructions
+### Backend (FastAPI)
 
 ```bash
-# Backend API
-cd backend && python -m venv .venv && source .venv/bin/activate
+cd backend
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-uvicorn main:app --host 0.0.0.0 --port 8000
+uvicorn main:app --reload
+```
 
-# React UI
-cd frontend && npm install && npm run dev
+### Frontend (React)
 
-# ESP32 (via Arduino CLI)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Flash ESP32
+
+```bash
 arduino-cli compile -b esp32:esp32:esp32 esp32/zeusnet_esp32.ino
 arduino-cli upload -p /dev/ttyUSB0 -b esp32:esp32:esp32
 ```
 
-## 📦 Export & Backup
+## 🧬 Serial Command Reference
 
-* `/api/export/csv` endpoint
-* Daily cron job at 3am to archive scans:
+| Code   | Direction | Purpose                        |
+| ------ | --------- | ------------------------------ |
+| `0x01` | PC → ESP  | Set config (interval, channel) |
+| `0x02` | PC → ESP  | Switch to fake AP mode         |
+| `0x10` | ESP → PC  | Send scan list (SSID/RSSI)     |
+| `0x12` | ESP → PC  | Captive form POST              |
+| `0x20` | PC → ESP  | Reboot ESP32                   |
+
+## 📂 Folder Structure
+
+```bash
+ZeusNet/
+├── esp32/                # ESP32 .ino sketches
+├── backend/              # FastAPI core
+│   ├── api/              # Scan, device, export endpoints
+│   ├── alerts/           # Anomaly detection, MAC tracker
+│   └── c2/               # Command bus
+├── frontend/             # React UI
+│   ├── pages/            # Views: Dashboard, Devices, Alerts
+│   └── components/       # SignalChart, ExportButton, etc.
+└── README.md
+```
+
+## ⚠️ Mode Switching
+
+Use `.env` to toggle behavior:
+
+```env
+ZEUSNET_MODE=SAFE
+# Change to AGGRESSIVE to unlock full pentest features
+```
+
+> **SAFE Mode** disables any packet injection or spoofing.
+> **AGGRESSIVE Mode** activates deauth, rogue AP, and swarm tactics (for legal use only).
+
+## 🛰️ TL-WN722N Tools
+
+| Tool                | Role                         |
+| ------------------- | ---------------------------- |
+| `aircrack-ng`       | Handshake harvesting         |
+| `hostapd + dnsmasq` | Rogue AP with captive portal |
+| `hcxtools`          | PMKID capture                |
+| `Scapy`             | Frame injection engine       |
+
+Use via API call:
+
+```http
+POST /api/nic/attack
+{
+  "mode": "deauth",
+  "target": "AA:BB:CC:DD:EE:FF",
+  "channel": 6
+}
+```
+
+## 🗃️ Backup Job (Linux crontab)
 
 ```cron
-0 3 * * * /usr/bin/python /srv/zeusnet/backend/export/backup.py >> /var/log/zeusnet_backup.log
+0 3 * * * /usr/bin/python3 /srv/zeusnet/backend/export/backup.py
 ```
 
-## 🔐 Ethical Use Disclaimer
+Creates daily backup in `/backups/net_scan_YYYYMMDD.csv.gz`
 
-ZeusNet is provided **for educational and authorized penetration testing** only. Aggressive modules are disabled by default. All usage must comply with local laws and explicit permission from targets.
+## 🧙 AI Model (Optional)
 
-## 🧿 Join the Legion
+Phase 2+ enables LSTM anomaly detection on RSSI trends.
 
-ZeusNet is modular. More payloads coming soon:
-
-* Bluetooth sniffing
-* AI-enhanced face tagging
-* USB HID injection (via dual role)
-* Meshnet C2 via LoRa
-
-> Built for chaos. Engineered for clarity. May your packets be ever invisible.
-
+```python
+from torch import nn
+class RSSIPredictor(nn.Module):
+    ...
 ```
 
-Let me know if you want it split across language files (e.g., `README.en.md`, `README.dev.md`, `README.ops.md`) or if we want dark mode terminal preview for GitHub.
-```
+Flags dropouts, rogue clones, new MACs. Run on GPU if available.
+
+## 📜 License
+
+MIT for tools. Aggressive modules must comply with **your local laws**. This tool is for **education and authorized testing** only.
+
+> "Observe silently. Analyze ruthlessly. Dominate ethically."
+> — *ZeusNet WarCore, Operational Directive*
+

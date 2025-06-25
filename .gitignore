@@ -4,6 +4,7 @@ __pycache__/
 
 # Environment
 .env
+/.venv
 
 # Node
 node_modules/
@@ -11,5 +12,6 @@ node_modules/
 # Ruff cache
 .ruff_cache/
 frontend/dist/
-/.venv
+
+# compress esp32-ZeusNet driver
 esp32-ZeusNet.zip

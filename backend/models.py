@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from backend.db import Base  # ✅ Use your project's Base
 from datetime import datetime
 
+
 class DeviceSeen(Base):
     __tablename__ = "device_seen"
 
@@ -10,6 +11,7 @@ class DeviceSeen(Base):
     ssid = Column(String, nullable=True)
     signal_strength = Column(Integer, nullable=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
+
 
 class WiFiScan(Base):
     __tablename__ = "wifi_scans"
@@ -22,6 +24,7 @@ class WiFiScan(Base):
     channel = Column(Integer)
     timestamp = Column(DateTime, default=datetime.utcnow)
 
+
 class Device(Base):
     __tablename__ = "devices"
 
@@ -29,6 +32,7 @@ class Device(Base):
     mac = Column(String, unique=True, index=True)
     first_seen = Column(DateTime)
     last_seen = Column(DateTime)
+
 
 class Alert(Base):
     __tablename__ = "alerts"

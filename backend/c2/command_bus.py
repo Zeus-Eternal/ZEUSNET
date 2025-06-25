@@ -1,5 +1,3 @@
-# command_bus.py
-
 import serial
 import json
 import logging
@@ -8,6 +6,7 @@ import paho.mqtt.client as mqtt
 from backend.settings import SERIAL_PORT, SERIAL_BAUD, MQTT_BROKER, MQTT_TOPIC
 
 logger = logging.getLogger("command_bus")
+
 
 class SerialCommandBus:
     def __init__(self):
@@ -18,7 +17,7 @@ class SerialCommandBus:
         self.listeners = []
 
     def start(self):
-        logger.info(f"Starting SerialCommandBus on {self.serial_port}")
+        logger.info(f"[SerialBus] Starting on {self.serial_port} @ {self.baud_rate}")
         self.read_thread.start()
 
     def send(self, opcode: int, payload: dict = None):
@@ -28,7 +27,7 @@ class SerialCommandBus:
         }
         raw = json.dumps(packet).encode("utf-8") + b"\n"
         self.ser.write(raw)
-        logger.debug(f"Sent to ESP32: {packet}")
+        logger.debug(f"[SerialBus] Sent to ESP32: {packet}")
 
     def read_loop(self):
         while True:
@@ -37,10 +36,10 @@ class SerialCommandBus:
                 if not line:
                     continue
                 data = json.loads(line)
-                logger.debug(f"Received from ESP32: {data}")
+                logger.debug(f"[SerialBus] Received from ESP32: {data}")
                 self.notify_listeners(data)
             except Exception as e:
-                logger.warning(f"Error reading serial: {e}")
+                logger.warning(f"[SerialBus] Error reading serial: {e}")
 
     def register_listener(self, callback):
         self.listeners.append(callback)
@@ -50,7 +49,7 @@ class SerialCommandBus:
             try:
                 cb(data)
             except Exception as e:
-                logger.warning(f"Listener error: {e}")
+                logger.warning(f"[SerialBus] Listener error: {e}")
 
 
 class MQTTCommandRelay:
@@ -62,7 +61,7 @@ class MQTTCommandRelay:
         self.bus.register_listener(self.forward_to_mqtt)
 
     def on_connect(self, client, userdata, flags, rc):
-        logger.info("Connected to MQTT broker")
+        logger.info(f"[MQTT] Connected to broker: {MQTT_BROKER}")
         client.subscribe(f"{MQTT_TOPIC}/to_esp")
 
     def on_message(self, client, userdata, msg):
@@ -72,15 +71,22 @@ class MQTTCommandRelay:
             data = payload.get("payload")
             self.bus.send(opcode, data)
         except Exception as e:
-            logger.warning(f"MQTT message error: {e}")
+            logger.warning(f"[MQTT] Message handling error: {e}")
 
     def forward_to_mqtt(self, data):
-        self.client.publish(f"{MQTT_TOPIC}/from_esp", json.dumps(data))
+        try:
+            self.client.publish(f"{MQTT_TOPIC}/from_esp", json.dumps(data))
+        except Exception as e:
+            logger.warning(f"[MQTT] Publish failed: {e}")
 
     def start(self):
-        logger.info("Starting MQTTCommandRelay")
-        self.client.connect(MQTT_BROKER)
-        self.client.loop_start()
+        logger.info(f"[MQTT] Starting MQTTCommandRelay to {MQTT_BROKER}")
+        try:
+            self.client.connect(MQTT_BROKER)
+            self.client.loop_start()
+        except Exception as e:
+            logger.error(f"[MQTT] Could not connect to broker '{MQTT_BROKER}': {e}")
+            logger.warning("[MQTT] Relay is offline. Commands will not sync via MQTT.")
 
 
 # Entrypoint for integration

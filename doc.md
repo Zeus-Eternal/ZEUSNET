@@ -172,5 +172,3 @@ ZeusNet/
 ```
 
 ---
-
-Let me know if you'd like an advanced **admin cheatsheet**, **attack module reference guide**, or a **dark-mode doc site** to match this documentation! 😈

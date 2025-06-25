@@ -2,7 +2,7 @@
 #include "macros.h"
 
 #define SERIAL_BAUD 115200
-#define SCAN_INTERVAL 5000
+unsigned long scanInterval = 5000;
 
 unsigned long lastScan = 0;
 
@@ -14,7 +14,7 @@ void setup() {
 }
 
 void loop() {
-  if (millis() - lastScan > SCAN_INTERVAL) {
+  if (millis() - lastScan > scanInterval) {
     scanAndSend();
     lastScan = millis();
   }
@@ -62,6 +62,6 @@ void handleCommand() {
   if (cmd == "REBOOT") {
     ESP.restart();
   } else if (cmd.startsWith("SET_INTERVAL:")) {
-    SCAN_INTERVAL = cmd.substring(13).toInt();
+    scanInterval = cmd.substring(13).toInt();
   }
 }

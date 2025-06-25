@@ -82,7 +82,7 @@ ZeusNet/
 
 ## ⚠️ Mode Switching
 
-Use `.env` to toggle behavior:
+Copy `.env.example` to `.env` to toggle behavior:
 
 ```env
 ZEUSNET_MODE=SAFE

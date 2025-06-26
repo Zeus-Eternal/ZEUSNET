@@ -67,7 +67,7 @@ For a lightweight native desktop view of scanned networks, run the GTK app:
 python gtk_app/main.py
 ```
 
-This requires the `PyGObject` package.
+This requires the `PyGObject` package built with GTK **4**.
 
 ### Auto Start with systemd (Linux)
 

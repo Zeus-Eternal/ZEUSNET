@@ -15,12 +15,15 @@ except ImportError:
     pyudev = None
 
 import paho.mqtt.client as mqtt
+
 from backend.settings import SERIAL_PORT, SERIAL_BAUD, MQTT_BROKER, MQTT_TOPIC
 
-logger = logging.getLogger("zeusnet.command_bus")
+logger = logging.getLogger("command_bus")
 
 
 class SerialCommandBus:
+    """Manage ESP32 serial connection with hotplug and persistence."""
+
     CONFIG_DIR = Path.home() / ".config" / "zeusnet"
     PERSIST_FILE = CONFIG_DIR / "last_serial"
 
@@ -34,9 +37,9 @@ class SerialCommandBus:
         self.lock = threading.Lock()
         self.running = True
 
-        self.listeners = []
-        self.last_in = None
-        self.last_out = None
+        self.listeners: list = []
+        self.last_in: dict | None = None
+        self.last_out: dict | None = None
 
         self.current_port = self._load_last_known_port()
 
@@ -82,8 +85,8 @@ class SerialCommandBus:
         return SERIAL_PORT
 
     def _udev_callback(self, action, device):
+        logger.info(f"[udev] {action} detected: {device.device_node}")
         if action in ("add", "remove"):
-            logger.info(f"[udev] {action}: {device.device_node}")
             self._reconnect_now()
 
     def _reconnect_now(self):
@@ -97,17 +100,19 @@ class SerialCommandBus:
             return False
         try:
             self.ser = serial.Serial(port, self.baud_rate, timeout=1)
-            self.current_port = port
-            self._save_last_known_port(port)
-            logger.info(f"[SerialBus] Connected to {port}")
-            if not self.read_thread.is_alive():
-                self.read_thread = threading.Thread(target=self._read_loop, daemon=True)
-                self.read_thread.start()
-            return True
         except SerialException as e:
             logger.error(f"[SerialBus] Failed to connect to {port}: {e}")
             self.ser = None
             return False
+
+        self.current_port = port
+        self._save_last_known_port(port)
+        logger.info(f"[SerialBus] Connected to {port}")
+
+        if not self.read_thread.is_alive():
+            self.read_thread = threading.Thread(target=self._read_loop, daemon=True)
+            self.read_thread.start()
+        return True
 
     def _reconnect_loop(self) -> None:
         delay = 1
@@ -140,14 +145,14 @@ class SerialCommandBus:
                 logger.warning(f"[SerialBus] Read error: {e}")
 
     def send(self, opcode: int, payload: dict | None = None) -> None:
-        if not self.ser or not self.ser.is_open:
-            logger.warning("[SerialBus] Cannot send, not connected.")
+        if not self.ser:
+            logger.warning("[SerialBus] Cannot send, serial not connected.")
             return
         packet = {"opcode": opcode, "payload": payload or {}}
         raw = json.dumps(packet).encode("utf-8") + b"\n"
         self.ser.write(raw)
         self.last_out = packet
-        logger.debug(f"[SerialBus] Sent: {packet}")
+        logger.debug(f"[SerialBus] Sent to ESP32: {packet}")
 
     def register_listener(self, callback) -> None:
         self.listeners.append(callback)
@@ -160,7 +165,7 @@ class SerialCommandBus:
                 logger.warning(f"[SerialBus] Listener error: {e}")
 
     def start(self) -> None:
-        logger.info("[SerialBus] Starting...")
+        logger.info("[SerialBus] Starting")
         self._connect()
         if not self.reconnect_thread.is_alive():
             self.reconnect_thread.start()
@@ -217,7 +222,7 @@ class MQTTCommandRelay:
             logger.error(f"[MQTT] Connection failed: {e}")
 
 
-# Entrypoint for external use
+# Entrypoint for use
 command_bus = SerialCommandBus()
 mqtt_relay = MQTTCommandRelay(command_bus)
 

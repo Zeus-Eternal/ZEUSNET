@@ -31,6 +31,8 @@ Launch a minimal desktop UI that lists scanned networks:
 python gtk_app/main.py
 ```
 
+Requires the `PyGObject` package with GTK **4** support.
+
 ### ⚙️ Enable systemd Service (Optional)
 
 ```bash

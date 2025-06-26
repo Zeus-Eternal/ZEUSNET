@@ -42,14 +42,6 @@ class NetworkWindow(Gtk.Window):
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(API_URL) as resp:
-                    data = await resp.json()
-                    self.liststore.clear()
-                    for item in data:
-                        self.liststore.append(
-                            [item.get("ssid", ""), item.get("rssi", 0)]
-                        )
-        except Exception as e:
-            print("Error fetching networks", e)
                     if resp.status == 200:
                         data = await resp.json()
                         self.liststore.clear()

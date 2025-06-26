@@ -21,6 +21,7 @@ docker compose up -d mqtt
 
 ```bash
 bash start-zeusnet.sh  # or start-zeusnet.bat on Windows
+```
 
 ### 📺 GTK Desktop Viewer (Optional)
 
@@ -28,4 +29,13 @@ Launch a minimal desktop UI that lists scanned networks:
 
 ```bash
 python gtk_app/main.py
+```
+
+### ⚙️ Enable systemd Service (Optional)
+
+```bash
+sudo cp systemd/zeusnet-serial.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable zeusnet-serial
+sudo systemctl start zeusnet-serial
 ```

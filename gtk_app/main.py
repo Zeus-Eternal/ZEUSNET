@@ -1,31 +1,31 @@
 import asyncio
+from gi.repository import Gtk, GLib
 import gi
 import aiohttp
 
 gi.require_version('Gtk', '3.0')  # Change to '4.0' if you're using GTK 4
 from gi.repository import Gtk, GLib
-
 API_URL = "http://localhost:8000/api/networks?limit=50"
 
 
 class NetworkWindow(Gtk.Window):
     def __init__(self):
         super().__init__(title="ZeusNet GTK")
-        self.set_default_size(500, 400)
+        self.set_default_size(400, 300)
 
         self.liststore = Gtk.ListStore(str, int)
         treeview = Gtk.TreeView(model=self.liststore)
-
-        # SSID Column
         renderer_text = Gtk.CellRendererText()
         column_text = Gtk.TreeViewColumn("SSID", renderer_text, text=0)
         treeview.append_column(column_text)
-
-        # RSSI Column
         renderer_rssi = Gtk.CellRendererText()
         column_rssi = Gtk.TreeViewColumn("RSSI", renderer_rssi, text=1)
         treeview.append_column(column_rssi)
+        scrolled = Gtk.ScrolledWindow()
+        scrolled.add(treeview)
+        self.add(scrolled)
 
+        GLib.timeout_add_seconds(5, self.refresh)
         # Scrollable window
         scrolled = Gtk.ScrolledWindow()
         scrolled.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
@@ -42,6 +42,14 @@ class NetworkWindow(Gtk.Window):
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(API_URL) as resp:
+                    data = await resp.json()
+                    self.liststore.clear()
+                    for item in data:
+                        self.liststore.append(
+                            [item.get("ssid", ""), item.get("rssi", 0)]
+                        )
+        except Exception as e:
+            print("Error fetching networks", e)
                     if resp.status == 200:
                         data = await resp.json()
                         self.liststore.clear()
@@ -65,6 +73,7 @@ def main():
     win.connect("destroy", Gtk.main_quit)
     win.show_all()
     Gtk.main()
+    loop.stop()
     loop.close()
 
 

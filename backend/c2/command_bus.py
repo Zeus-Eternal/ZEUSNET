@@ -1,3 +1,6 @@
+
+import serial
+from serial.tools import list_ports
 import os
 import json
 import glob
@@ -6,6 +9,13 @@ import serial
 import logging
 import pyudev
 import threading
+from pathlib import Path
+import glob
+
+try:
+    import pyudev
+except Exception:  # pyudev not available on Windows/macOS
+    pyudev = None
 import paho.mqtt.client as mqtt
 from serial.serialutil import SerialException
 from backend.settings import SERIAL_BAUD, MQTT_BROKER, MQTT_TOPIC
@@ -16,6 +26,54 @@ PERSIST_FILE = "/tmp/zeusnet_last_serial"  # Can be moved to config dir if neede
 
 
 class SerialCommandBus:
+    CONFIG_DIR = Path.home() / ".config" / "zeusnet"
+    PERSIST_FILE = CONFIG_DIR / "last_serial"
+
+    def __init__(self):
+        self.CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+        self.current_port = None
+        self.serial_port = self._find_serial_port()
+        self.baud_rate = SERIAL_BAUD
+        self.ser = serial.Serial(self.serial_port, self.baud_rate, timeout=1)
+        self.read_thread = threading.Thread(target=self.read_loop, daemon=True)
+        self.listeners = []
+        self.last_in: dict | None = None
+        self.last_out: dict | None = None
+
+    def _find_serial_port(self) -> str:
+        """Locate an appropriate serial port and persist it for future runs."""
+        cached = None
+        if self.PERSIST_FILE.exists():
+            cached = self.PERSIST_FILE.read_text().strip()
+
+        preferred_ids = [("10c4", "ea60"), ("1a86", "7523")]
+
+        # Use pyudev on Linux for vendor/product matching
+        if pyudev:
+            context = pyudev.Context()
+            for device in context.list_devices(subsystem="tty"):
+                vid = device.get("ID_VENDOR_ID")
+                pid = device.get("ID_MODEL_ID")
+                if vid and pid and (vid, pid) in preferred_ids:
+                    port = device.device_node
+                    self.PERSIST_FILE.write_text(port)
+                    return port
+
+        # Fall back to pyserial scanning
+        ports = [p.device for p in list_ports.comports()]
+        if cached and cached in ports:
+            return cached
+        if ports:
+            self.PERSIST_FILE.write_text(ports[0])
+            return ports[0]
+
+        # Ultimate fallback to configured default
+        self.PERSIST_FILE.write_text(SERIAL_PORT)
+        return SERIAL_PORT
+
+    def start(self):
+        logger.info(f"[SerialBus] Starting on {self.serial_port} @ {self.baud_rate}")
+        self.read_thread.start()
     def __init__(self, baud_rate=SERIAL_BAUD, backoff_base=2, backoff_limit=60):
         self.baud_rate = baud_rate
         self.ser = None
@@ -99,27 +157,21 @@ class SerialCommandBus:
     def send(self, opcode: int, payload: dict = None):
         packet = {"opcode": opcode, "payload": payload or {}}
         raw = json.dumps(packet).encode("utf-8") + b"\n"
-        with self.lock:
-            if self.ser and self.ser.is_open:
-                try:
-                    self.ser.write(raw)
-                    logger.debug(f"[SerialBus] Sent: {packet}")
-                except Exception as e:
-                    logger.warning(f"[SerialBus] Write error: {e}")
-            else:
-                logger.warning("[SerialBus] Cannot send, no open serial connection.")
+        self.ser.write(raw)
+        self.last_out = packet
+        logger.debug(f"[SerialBus] Sent to ESP32: {packet}")
 
-    def _read_loop(self):
-        while self.running:
+    def read_loop(self):
+        while True:
             try:
-                if self.ser and self.ser.is_open:
-                    line = self.ser.readline().decode("utf-8").strip()
-                    if line:
-                        data = json.loads(line)
-                        logger.debug(f"[SerialBus] Received: {data}")
-                        self.notify_listeners(data)
-                else:
-                    time.sleep(1)
+                line = self.ser.readline().decode("utf-8").strip()
+                if not line:
+                    continue
+                data = json.loads(line)
+                self.last_in = data
+                logger.debug(f"[SerialBus] Received from ESP32: {data}")
+                self.notify_listeners(data)
+                
             except Exception as e:
                 logger.warning(f"[SerialBus] Read error: {e}")
 

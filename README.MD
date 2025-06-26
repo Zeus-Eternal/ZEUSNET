@@ -38,6 +38,7 @@ cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 uvicorn main:app --reload
+# Tables are created automatically on first run
 ```
 
 ### Frontend (React)
@@ -68,6 +69,9 @@ python gtk_app/main.py
 ```
 
 This requires the `PyGObject` package built with GTK **4**.
+The window now displays SSID, BSSID, channel, authentication mode,
+RSSI and timestamp, refreshing every few seconds. A status bar
+indicates the time of the last successful update or any errors.
 
 ### Auto Start with systemd (Linux)
 

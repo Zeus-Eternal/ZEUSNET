@@ -47,7 +47,7 @@ uvicorn main:app --reload
 ### Frontend (GTK)
 
 ```bash
-python frontend/main.py
+python -m frontend.main
 ```
 
 ### Web UI (React)
@@ -75,7 +75,7 @@ For a native desktop view with tabs for networks, dashboards and map,
 run the GTK app:
 
 ```bash
-python frontend/main.py
+python -m frontend.main
 ```
 
 This requires the `PyGObject` package built with GTK **4**.

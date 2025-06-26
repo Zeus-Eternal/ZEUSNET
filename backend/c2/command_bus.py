@@ -1,7 +1,5 @@
-
 import os
 import json
-import glob
 import time
 import logging
 import threading
@@ -13,18 +11,17 @@ from serial.serialutil import SerialException
 
 try:
     import pyudev
-except Exception:  # pyudev not available on Windows/macOS
+except ImportError:
     pyudev = None
 
 import paho.mqtt.client as mqtt
-
 from backend.settings import SERIAL_PORT, SERIAL_BAUD, MQTT_BROKER, MQTT_TOPIC
 
-logger = logging.getLogger("command_bus")
+logger = logging.getLogger("zeusnet.command_bus")
 
 
 class SerialCommandBus:
-    """Manage ESP32 serial connection with hotplug and persistence."""
+    """Manage ESP32 serial connection with hotplug, backoff reconnect, and persistence."""
 
     CONFIG_DIR = Path.home() / ".config" / "zeusnet"
     PERSIST_FILE = CONFIG_DIR / "last_serial"
@@ -57,37 +54,34 @@ class SerialCommandBus:
         self.read_thread = threading.Thread(target=self._read_loop, daemon=True)
         self.reconnect_thread = threading.Thread(target=self._reconnect_loop, daemon=True)
 
-    def _find_serial_port(self) -> str | None:
-        """Locate an appropriate serial port and persist it for future runs."""
-        cached = None
+    def _load_last_known_port(self) -> str | None:
         if self.PERSIST_FILE.exists():
-            cached = self.PERSIST_FILE.read_text().strip()
+            return self.PERSIST_FILE.read_text().strip()
+        return None
 
+    def _save_last_known_port(self, port: str) -> None:
+        self.PERSIST_FILE.write_text(port)
+
+    def _find_serial_port(self) -> str | None:
         preferred_ids = [("10c4", "ea60"), ("1a86", "7523")]
 
-        # Use pyudev on Linux for vendor/product matching
         if pyudev:
-            context = pyudev.Context()
-            for device in context.list_devices(subsystem="tty"):
+            for device in pyudev.Context().list_devices(subsystem="tty"):
                 vid = device.get("ID_VENDOR_ID")
                 pid = device.get("ID_MODEL_ID")
                 if vid and pid and (vid, pid) in preferred_ids:
                     port = device.device_node
-                    self.PERSIST_FILE.write_text(port)
+                    self._save_last_known_port(port)
                     return port
 
-        # Fall back to pyserial scanning
         ports = [p.device for p in list_ports.comports()]
-        if cached and cached in ports:
-            return cached
+        if self.current_port and self.current_port in ports:
+            return self.current_port
         if ports:
-            self.PERSIST_FILE.write_text(ports[0])
+            self._save_last_known_port(ports[0])
             return ports[0]
 
-        # Ultimate fallback to configured default
-        self.PERSIST_FILE.write_text(SERIAL_PORT)
         return SERIAL_PORT
-
 
     def _udev_callback(self, action, device):
         logger.info(f"[udev] {action} detected: {device.device_node}")
@@ -97,14 +91,6 @@ class SerialCommandBus:
     def _reconnect_now(self):
         self.disconnect()
         self._connect()
-
-    def _load_last_known_port(self) -> str | None:
-        if self.PERSIST_FILE.exists():
-            return self.PERSIST_FILE.read_text().strip()
-        return None
-
-    def _save_last_known_port(self, port: str) -> None:
-        self.PERSIST_FILE.write_text(port)
 
     def _connect(self) -> bool:
         port = self._find_serial_port()
@@ -121,6 +107,7 @@ class SerialCommandBus:
         self.current_port = port
         self._save_last_known_port(port)
         logger.info(f"[SerialBus] Connected to {port}")
+
         if not self.read_thread.is_alive():
             self.read_thread = threading.Thread(target=self._read_loop, daemon=True)
             self.read_thread.start()
@@ -132,7 +119,7 @@ class SerialCommandBus:
             if self.ser is None or not self.ser.is_open:
                 success = self._connect()
                 if not success:
-                    logger.debug(f"[SerialBus] Retry in {delay}s...")
+                    logger.debug(f"[SerialBus] Reconnect retry in {delay}s...")
                     time.sleep(delay)
                     delay = min(self.backoff_limit, delay * self.backoff_base)
                 else:
@@ -151,20 +138,20 @@ class SerialCommandBus:
                     continue
                 data = json.loads(line)
                 self.last_in = data
-                logger.debug(f"[SerialBus] Received from ESP32: {data}")
+                logger.debug(f"[SerialBus] Incoming: {data}")
                 self.notify_listeners(data)
             except Exception as e:
                 logger.warning(f"[SerialBus] Read error: {e}")
 
     def send(self, opcode: int, payload: dict | None = None) -> None:
-        if not self.ser:
-            logger.warning("[SerialBus] Cannot send, serial not connected.")
+        if not self.ser or not self.ser.is_open:
+            logger.warning("[SerialBus] Cannot send, not connected.")
             return
         packet = {"opcode": opcode, "payload": payload or {}}
         raw = json.dumps(packet).encode("utf-8") + b"\n"
         self.ser.write(raw)
         self.last_out = packet
-        logger.debug(f"[SerialBus] Sent to ESP32: {packet}")
+        logger.debug(f"[SerialBus] Sent: {packet}")
 
     def register_listener(self, callback) -> None:
         self.listeners.append(callback)
@@ -174,10 +161,10 @@ class SerialCommandBus:
             try:
                 cb(data)
             except Exception as e:
-                logger.warning(f"[SerialBus] Listener exception: {e}")
+                logger.warning(f"[SerialBus] Listener error: {e}")
 
     def start(self) -> None:
-        logger.info("[SerialBus] Starting")
+        logger.info("[SerialBus] Starting...")
         self._connect()
         if not self.reconnect_thread.is_alive():
             self.reconnect_thread.start()
@@ -185,7 +172,7 @@ class SerialCommandBus:
     def disconnect(self) -> None:
         with self.lock:
             if self.ser and self.ser.is_open:
-                logger.info("[SerialBus] Closing connection.")
+                logger.info("[SerialBus] Disconnecting.")
                 self.ser.close()
             self.ser = None
 
@@ -207,7 +194,7 @@ class MQTTCommandRelay:
         self.bus.register_listener(self.forward_to_mqtt)
 
     def on_connect(self, client, userdata, flags, rc):
-        logger.info(f"[MQTT] Connected to {MQTT_BROKER}")
+        logger.info(f"[MQTT] Connected to broker: {MQTT_BROKER}")
         client.subscribe(f"{MQTT_TOPIC}/to_esp")
 
     def on_message(self, client, userdata, msg):
@@ -217,24 +204,24 @@ class MQTTCommandRelay:
             data = payload.get("payload")
             self.bus.send(opcode, data)
         except Exception as e:
-            logger.warning(f"[MQTT] Message error: {e}")
+            logger.warning(f"[MQTT] Error parsing message: {e}")
 
     def forward_to_mqtt(self, data):
         try:
             self.client.publish(f"{MQTT_TOPIC}/from_esp", json.dumps(data))
         except Exception as e:
-            logger.warning(f"[MQTT] Publish failed: {e}")
+            logger.warning(f"[MQTT] Failed to publish: {e}")
 
     def start(self):
-        logger.info(f"[MQTT] Starting relay to {MQTT_BROKER}")
+        logger.info(f"[MQTT] Starting MQTT relay...")
         try:
             self.client.connect(MQTT_BROKER)
             self.client.loop_start()
         except Exception as e:
-            logger.error(f"[MQTT] Could not connect: {e}")
+            logger.error(f"[MQTT] Connection failed: {e}")
 
 
-# Entrypoint for integration
+# Entrypoint
 command_bus = SerialCommandBus()
 mqtt_relay = MQTTCommandRelay(command_bus)
 

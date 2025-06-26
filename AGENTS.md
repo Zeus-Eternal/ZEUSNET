@@ -1,62 +1,340 @@
-# ZEUSNET: Intelligent Agents Manifest
-
-This document outlines all AI-driven Agents operating within the ZeusNet ecosystem. These agents follow a modular structure designed for autonomous collaboration, system orchestration, and network intelligence.
+# ZEUSNET • Intelligent Agents Manifest
+*A single source-of-truth for every autonomous module in the ZeusNet arsenal.*
 
 ---
 
 ## 🧠 Agent Index
 
-| Agent Name     | Type       | Description                                                                 | Entry Point / File              |
-|----------------|------------|-----------------------------------------------------------------------------|----------------------------------|
-| ZeusRelay      | MQTT Agent | Handles command relays over MQTT for remote control and status propagation. | `backend/agents/zeus_relay.py`  |
-| SignalWatcher  | Sensor AI  | Monitors incoming RSSI/SSID data, filters noise, and logs signal events.    | `backend/agents/signal_watcher.py` |
-| MapIntelligence| Visual AI  | Processes and maps live network events to a geospatial UI.                  | `backend/agents/map_intel.py`   |
-| AnomalyGuard   | Defense AI | Flags unusual patterns in RSSI/network spikes for security analysis.        | `backend/agents/anomaly_guard.py` |
-| CommandHub     | Core Agent | Accepts user/admin input, interprets intent, dispatches actions accordingly.| `backend/agents/command_hub.py` |
+| Agent Name      | Type        | Description                                                                                   | Entry Point / File                           |
+|-----------------|-------------|-----------------------------------------------------------------------------------------------|----------------------------------------------|
+| ZeusRelay       | MQTT Agent  | Bridges MQTT ⇆ Serial traffic for remote command & control, status heartbeat propagation      | `backend/agents/zeus_relay.py`               |
+| SignalWatcher   | Sensor AI   | Listens to ESP32 RSSI / SSID data, de-noises, timestamps and streams into the DB              | `backend/agents/signal_watcher.py`           |
+| MapIntelligence | Visual AI   | Converts live network events into geo-referenced overlays for the UI heat-map                 | `backend/agents/map_intel.py`                |
+| AnomalyGuard    | Defense AI  | Performs statistical / ML anomaly detection on signal metrics                                 | `backend/agents/anomaly_guard.py`            |
+| CommandHub      | Core Agent  | Central intent router: interprets user inputs & dispatches tasks to other agents              | `backend/agents/command_hub.py`              |
 
 ---
 
-## 🔧 Agent Mode Options
+## 🔧 Global Agent Mode Options
 
-Each agent supports the following optional modes via ENV or config:
-
-| Option           | Description                                       | Default     |
-|------------------|---------------------------------------------------|-------------|
-| `DEBUG_MODE`     | Enables verbose logging and trace output          | `false`     |
-| `ISOLATED_MODE`  | Runs the agent standalone, no inter-agent links   | `false`     |
-| `RETRY_LIMIT`    | Max retries before escalation or fallback         | `3`         |
-| `HOT_RELOAD`     | Auto-reloads code during development              | `true`      |
+| Option            | Description                                              | Default |
+|-------------------|----------------------------------------------------------|---------|
+| `DEBUG_MODE`      | Verbose logging + trace packets                          | `false` |
+| `ISOLATED_MODE`   | Run standalone (no inter-agent bus)                      | `false` |
+| `RETRY_LIMIT`     | Max retries before escalation / fallback                 | `3`     |
+| `HOT_RELOAD`      | Auto-reload code on file change (dev only)               | `true`  |
 
 ---
 
-## 🧩 Agent Capabilities
+## 🧩 Shared Capabilities
 
-- **Autonomous Execution**: Each agent operates independently but can collaborate via event bus or MQTT.
-- **Plugin Awareness**: Agents can discover and leverage registered plugins (see `PLUGINS.md`).
-- **Cross-Platform Compatibility**: Designed to run on Linux, macOS, Windows.
-- **Observable**: Integrated with Prometheus metrics (see `OBSERVABILITY.md`).
+- **Autonomous Execution** — each agent has its own asyncio task-loop
+- **Plugin-Aware** — agents auto-discover plugins registered in `PLUGINS.md`
+- **Cross-Platform** — Linux / macOS / Windows (where libs are available)
+- **Observable** — Prometheus metrics via `/metrics` or Pushgateway
 
 ---
 
-## 🛠️ Integration Notes
+## 🛠 Integration Notes
 
-- All agents are instantiated via the `AgentManager` (`backend/core/agent_manager.py`).
-- Environment variables are loaded from `.env` or CLI args.
-- Agents report heartbeat to `http://localhost:8000/heartbeat` by default.
+- Agents instantiated by `AgentManager` → `backend/core/agent_manager.py`
+- ENV loaded from `.env`, CLI flags override
+- Heartbeats posted to `/heartbeat` every 15 s
+
+---
+
+# Agent Profiles
+*(One section per agent – follow the template in the Style Guide)*
+
+## 🧠 ZeusRelay
+**Type**: `Controller`  
+**ID**: `agent_zeusrelay`  
+**Status**: 🟢 Active  
+**Version**: `v1.0.0`  
+**Scope**: `Local`  
+**Visibility**: `Internal`
+
+### 🎯 Purpose
+Bridges serial frames from ESP32 nodes to the MQTT broker and vice-versa, providing a low-latency command pipeline and status fan-out.
+
+### 🔧 Capabilities
+- Serial ⇆ MQTT bidirectional relay
+- Command opcode validation
+- Automatic reconnection & QoS 1 delivery
+- Optional TLS if MQTT is secured
+
+### 📥 Inputs
+| Source             | Format | Description                       |
+|--------------------|--------|-----------------------------------|
+| Serial (ESP32)     | JSON   | Raw scan / portal / cmd frames    |
+| `zeusnet/to_esp`   | MQTT   | Remote command packets            |
+
+### 📤 Outputs
+| Destination             | Format | Description                   |
+|-------------------------|--------|-------------------------------|
+| `zeusnet/from_esp`      | MQTT   | Forwarded ESP32 messages      |
+| Serial (ESP32)          | JSON   | Encoded opcode/ payload       |
+
+### 🔗 Dependencies
+- `pyserial`
+- `paho-mqtt`
+
+### 🧪 Test Commands
+```bash
+# Fire a dummy scan trigger
+mosquitto_pub -t zeusnet/to_esp -m '{"opcode":1,"payload":{"scan":true}}'
+````
+
+---
+
+## 🧠 SignalWatcher
+
+**Type**: `Sensor`
+**ID**: `agent_signalwatcher`
+**Status**: 🟢 Active
+**Version**: `v1.0.0`
+**Scope**: `Local`
+**Visibility**: `Internal`
+
+### 🎯 Purpose
+
+Consumes ESP32 Wi-Fi scan rows, filters duplicates / noise, batches them into the database and raises events for downstream analytics.
+
+### 🔧 Capabilities
+
+* Rolling RSSI average & debounce
+* Batch insert to SQLite / Postgres
+* Emits Prometheus metrics (`rssi_avg`, `ssid_seen_total`)
+* Publishes “new SSID” events to MQTT
+
+### 📥 Inputs
+
+| Source             | Format | Description              |
+| ------------------ | ------ | ------------------------ |
+| `zeusnet/from_esp` | JSON   | Raw scan rows from ESP32 |
+
+### 📤 Outputs
+
+| Destination             | Format | Description                 |
+| ----------------------- | ------ | --------------------------- |
+| SQLite `wifi_scans`     | SQL    | Persistent scan records     |
+| `zeusnet/signal_events` | MQTT   | Deduped / processed signals |
+
+### 🔗 Dependencies
+
+* `SQLAlchemy`
+* `paho-mqtt`
+* `prometheus-client`
+
+### 🧪 Test Commands
+
+```bash
+mosquitto_pub -t zeusnet/from_esp -m '{"ssid":"Test","bssid":"aa:bb","rssi":-42,"timestamp":"..."}'
+```
+
+---
+
+## 🧠 MapIntelligence
+
+**Type**: `Synthesizer`
+**ID**: `agent_mapintel`
+**Status**: 🟢 Active
+**Version**: `v1.0.0`
+**Scope**: `Hybrid`
+**Visibility**: `User-facing`
+
+### 🎯 Purpose
+
+Transforms processed signal events into GeoJSON heat-layers for the React or GTK front-end, enabling a real-time map overlay.
+
+### 🔧 Capabilities
+
+* SSID/BSSID ⇆ Geo-hash translation (if GPS present)
+* Heat-map tile generation
+* WebSocket broadcast to UI clients
+* Caching with Redis
+
+### 📥 Inputs
+
+| Source                  | Format | Description           |
+| ----------------------- | ------ | --------------------- |
+| `zeusnet/signal_events` | MQTT   | Processed signal rows |
+
+### 📤 Outputs
+
+| Destination           | Format  | Description          |
+| --------------------- | ------- | -------------------- |
+| `/ws/map` (WebSocket) | GeoJSON | Live heat-map chunks |
+
+### 🔗 Dependencies
+
+* `fastapi_websocket_pubsub`
+* `redis`
+
+---
+
+## 🧠 AnomalyGuard
+
+**Type**: `Analyzer`
+**ID**: `agent_anomalyguard`
+**Status**: 🟢 Active
+**Version**: `v1.0.0`
+**Scope**: `Local`
+**Visibility**: `User-facing`
+
+### 🎯 Purpose
+
+Runs statistical and ML checks over rolling RSSI, SSID and device metrics to flag rogue APs, clones, and abrupt signal drops.
+
+### 🔧 Capabilities
+
+* Z-score & IQR outlier detection
+* LSTM-based temporal anomaly detection (GPU optional)
+* Alert routing to `/api/alerts` & MQTT
+* Auto-throttling to prevent alert storms
+
+### 📥 Inputs
+
+| Source              | Format | Description            |
+| ------------------- | ------ | ---------------------- |
+| SQLite `wifi_scans` | ORM    | Historical scan series |
+
+### 📤 Outputs
+
+| Destination       | Format | Description           |
+| ----------------- | ------ | --------------------- |
+| `alerts` DB table | SQL    | Persistent alerts     |
+| `zeusnet/alerts`  | MQTT   | Realtime alert stream |
+
+### 🔗 Dependencies
+
+* `pandas`
+* `torch`
+* `scikit-learn`
+
+### 🧪 Test Commands
+
+```bash
+curl -X POST http://localhost:8000/api/alerts/fake --data '{"type":"TEST","msg":"simulate"}'
+```
+
+---
+
+## 🧠 CommandHub
+
+**Type**: `Controller`
+**ID**: `agent_commandhub`
+**Status**: 🟢 Active
+**Version**: `v1.0.0`
+**Scope**: `Local`
+**Visibility**: `User-facing`
+
+### 🎯 Purpose
+
+Serves as the single point of truth for user/admin commands, interprets natural-language intents (phase 3) and dispatches structured opcodes to appropriate agents.
+
+### 🔧 Capabilities
+
+* REST + WebSocket intake
+* Intent parser / CLI dispatcher
+* Secure permission checks
+* Audit log of all admin actions
+
+### 📥 Inputs
+
+| Source              | Format | Description    |
+| ------------------- | ------ | -------------- |
+| REST `/api/command` | JSON   | Command blocks |
+
+### 📤 Outputs
+
+| Destination      | Format | Description           |
+| ---------------- | ------ | --------------------- |
+| `zeusnet/to_esp` | MQTT   | Serial opcode payload |
+| In-memory queue  | Dict   | Agent dispatch tasks  |
+
+### 🔗 Dependencies
+
+* `fastapi`
+* `pydantic`
+
+### 🧪 Test Commands
+
+```bash
+curl -X POST http://localhost:8000/api/command -d '{"opcode":1,"payload":{"scan":true}}'
+```
 
 ---
 
 ## 🚧 Planned Agents
 
-| Agent Name       | Type          | Status     | Description |
-|------------------|---------------|------------|-------------|
-| ReconBot         | Recon Agent   | ⚙️ Planned | Actively scans Wi-Fi landscape and records anomalies |
-| IntelBroker      | Meta Agent    | ⚙️ Planned | Routes intelligence between agents and frontend      |
-| ZeusCommander    | Master Agent  | ⚙️ Planned | Overarching task dispatcher for complex workflows    |
+| Agent Name    | Type         | Status     | Description                                      |
+| ------------- | ------------ | ---------- | ------------------------------------------------ |
+| ReconBot      | Recon Agent  | ⚙️ Planned | Actively sweeps all channels & logs new BSSIDs   |
+| IntelBroker   | Meta Agent   | ⚙️ Planned | Aggregates intel from multiple ZeusNet instances |
+| ZeusCommander | Master Agent | ⚙️ Planned | Multi-node orchestration & advanced task graph   |
 
 ---
 
-This manifest is used by ChatGPT Codex to understand agent responsibilities, entry points, and runtime options.
+# 🎨 Style Guide for Future Entries
 
-> **Maintainer:** God Of Code, Zeus  
+*(Codex parses this section; do **not** change header names without updating tooling.)*
+
+### 1  Agent Index Row
+
+```markdown
+| AgentName | AgentType | Short description (max 90 chars) | `backend/agents/file.py` |
+```
+
+### 2  Full Agent Profile Template
+
+*(Copy → paste → replace placeholders)*
+
+````markdown
+## 🧠 AgentName
+**Type**: `[Sensor | Controller | Analyzer | Synthesizer | Plugin]`  
+**ID**: `agent_agentname`  
+**Status**: 🟢 Active  
+**Version**: `vX.Y.Z`  
+**Scope**: `Local | Remote | Hybrid`  
+**Visibility**: `User-facing | Internal | Experimental`
+
+### 🎯 Purpose
+> One-sentence clear description.
+
+### 🔧 Capabilities
+- Bullet list
+
+### 📥 Inputs
+| Source | Format | Description |
+|--------|--------|-------------|
+
+### 📤 Outputs
+| Destination | Format | Description |
+
+### 🔗 Dependencies
+- list…
+
+### 🧪 Test Commands
+```bash
+# example command
+````
+
+```
+
+### 3  Status Emoji
+| Emoji | Meaning |
+|-------|---------|
+| 🟢   | Active  |
+| 🔴   | Inactive/Deprecated |
+| ⚙️    | Planned/In Dev |
+
+---
+
+> **Maintainer:** God Of Code (Zeus)  
 > **Last Updated:** 2025-06-25
+```
+
+---
+
+**Usage**: Save this content as `AGENTS.md` at repo root. Codex and devs will now parse, validate, and extend agents in perfect style.

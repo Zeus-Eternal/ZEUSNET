@@ -1,4 +1,5 @@
 import asyncio
+import threading
 import gi
 import aiohttp
 
@@ -10,26 +11,37 @@ API_URL = "http://localhost:8000/api/networks?limit=50"
 class NetworkWindow(Gtk.ApplicationWindow):
     def __init__(self, app: Gtk.Application):
         super().__init__(application=app, title="ZeusNet GTK")
-        self.set_default_size(400, 300)
+        self.set_default_size(600, 400)
 
-        self.liststore = Gtk.ListStore(str, int)
+        # Store: SSID, BSSID, Channel, RSSI, Auth, Time
+        self.liststore = Gtk.ListStore(str, str, int, int, str, str)
         treeview = Gtk.TreeView(model=self.liststore)
-        renderer_text = Gtk.CellRendererText()
-        column_text = Gtk.TreeViewColumn("SSID", renderer_text, text=0)
-        treeview.append_column(column_text)
-        renderer_rssi = Gtk.CellRendererText()
-        column_rssi = Gtk.TreeViewColumn("RSSI", renderer_rssi, text=1)
-        treeview.append_column(column_rssi)
+
+        columns = [
+            ("SSID", 0),
+            ("BSSID", 1),
+            ("CH", 2),
+            ("RSSI", 3),
+            ("AUTH", 4),
+            ("TIME", 5),
+        ]
+        for title, idx in columns:
+            renderer = Gtk.CellRendererText()
+            treeview.append_column(Gtk.TreeViewColumn(title, renderer, text=idx))
 
         scrolled = Gtk.ScrolledWindow()
         scrolled.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         scrolled.set_child(treeview)
         self.set_child(scrolled)
 
+        # Dedicated asyncio loop in a background thread
+        self.loop = asyncio.new_event_loop()
+        threading.Thread(target=self.loop.run_forever, daemon=True).start()
+
         GLib.timeout_add_seconds(5, self.refresh)
 
         # First fetch on load
-        asyncio.get_event_loop().create_task(self.fetch())
+        asyncio.run_coroutine_threadsafe(self.fetch(), self.loop)
 
     async def fetch(self):
         try:
@@ -37,18 +49,31 @@ class NetworkWindow(Gtk.ApplicationWindow):
                 async with session.get(API_URL) as resp:
                     if resp.status == 200:
                         data = await resp.json()
-                        self.liststore.clear()
-                        for item in data:
-                            self.liststore.append(
-                                [item.get("ssid", "Unknown"), item.get("rssi", 0)]
-                            )
+                        GLib.idle_add(self.update_store, data)
                     else:
                         print(f"HTTP Error: {resp.status}")
         except Exception as e:
             print("Error fetching networks:", e)
 
+    def update_store(self, data):
+        """Update Gtk.ListStore from a background thread."""
+        self.liststore.clear()
+        for item in data:
+            timestamp = item.get("timestamp", "")
+            if isinstance(timestamp, str):
+                timestamp = timestamp.replace("T", " ").split(".")[0]
+            self.liststore.append([
+                item.get("ssid", "Unknown"),
+                item.get("bssid", "N/A"),
+                item.get("channel", 0),
+                item.get("rssi", 0),
+                item.get("auth", ""),
+                timestamp,
+            ])
+        return False
+
     def refresh(self):
-        asyncio.get_event_loop().create_task(self.fetch())
+        asyncio.run_coroutine_threadsafe(self.fetch(), self.loop)
         return True
 
 

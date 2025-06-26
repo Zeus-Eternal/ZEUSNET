@@ -19,7 +19,9 @@ class AttackService:
     def __init__(self):
         self.active: dict[int, dict] = {}
 
-    def _build_command(self, mode: str, target: str | None, channel: int | None) -> list[str]:
+    def _build_command(
+        self, mode: str, target: str | None, channel: int | None
+    ) -> list[str]:
         if mode == "deauth" and target:
             return ["echo", f"deauth {target}"]
         if mode == "rogue_ap":

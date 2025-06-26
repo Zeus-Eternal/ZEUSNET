@@ -10,13 +10,19 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, GLib, GdkPixbuf
+from gi.repository import Gtk, GLib, GdkPixbuf  # noqa: E402
 
 try:
-    gi.require_version("WebKit2", "4.0")
-    from gi.repository import WebKit2
+    try:
+        gi.require_version("WebKit2", "4.1")
+    except ValueError:
+        gi.require_version("WebKit2", "4.0")
+    from gi.repository import WebKit2  # noqa: E402
+
+    WEBKIT_AVAILABLE = True
 except Exception:  # pragma: no cover - optional dependency
     WebKit2 = None
+    WEBKIT_AVAILABLE = False
 
 API_BASE = "http://localhost:8000/api/networks"
 CMD_URL = "http://localhost:8000/api/command"
@@ -145,7 +151,7 @@ class NetworkWindow(Gtk.ApplicationWindow):
         self.notebook.append_page(dashboard_page, Gtk.Label(label="Dashboard"))
 
         # ----- Map tab -----
-        if WebKit2:
+        if WEBKIT_AVAILABLE:
             self.webview = WebKit2.WebView()
             map_container = self.webview
         else:
@@ -385,7 +391,7 @@ class NetworkWindow(Gtk.ApplicationWindow):
         self.chart_image.set_from_pixbuf(loader.get_pixbuf())
 
     def draw_map(self, data: list[dict]):
-        if not WebKit2:
+        if not WEBKIT_AVAILABLE:
             return
         import folium
 

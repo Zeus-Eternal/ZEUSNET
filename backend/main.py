@@ -9,6 +9,7 @@ from backend.api import (
     settings as settings_api,
     nic,
     diagnostic,
+    covert_ops_agent,
 )
 from fastapi.middleware.cors import CORSMiddleware
 from backend.routes import networks as demo_networks
@@ -20,6 +21,7 @@ app = FastAPI(
     version="0.1.0",
     description="Secure, Real-Time Network Analysis and Control System",
 )
+
 
 # 👋 Root endpoint for friendly browser access
 @app.get("/")
@@ -34,6 +36,7 @@ def read_root():
         "command": "/api/command",
         "export_csv": "/api/export/csv",
     }
+
 
 # 🌐 Add CORS support for frontend dev
 app.add_middleware(
@@ -55,6 +58,8 @@ app.include_router(command.router, prefix="/api")
 app.include_router(settings_api.router, prefix="/api")
 app.include_router(nic.router, prefix="/api")
 app.include_router(diagnostic.router, prefix="/api")
+app.include_router(covert_ops_agent.router, prefix="/api")
+
 
 # 🚀 Background startup tasks
 @app.on_event("startup")

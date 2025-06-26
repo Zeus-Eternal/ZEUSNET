@@ -13,12 +13,13 @@
 | 🧠 AI anomaly detection      | Predicts unusual signal behavior with LSTM       |
 | 🕵️ Rogue AP detection       | Flags SSID duplicates with different BSSIDs      |
 | 📁 Auto backups              | Daily JSON/CSV dump of scan logs                 |
-| 📊 Export to CSV/Excel       | Click-to-export tables from React UI             |
+| 📊 Export to CSV/Excel       | Export tables directly from the GTK UI             |
 | 🔥 Deauth & AP cloning       | Enabled via TL‑WN722N NIC in aggressive mode     |
 | 🧪 TL‑WN722N automation      | Controlled packet injection, handshake captures  |
-| 🗺️ Heatmap dashboard         | Leaflet-powered SSID and RSSI visualization      |
+| 🗺️ Heatmap dashboard         | Leaflet-powered map view in GTK UI |
 | 🎛️ In-app pentest controls  | Toggle mode and launch attacks via UI |
 | 📜 Advanced network list     | Filter scans by SSID or auth mode |
+| 📈 Signal charts             | Top RSSI graph in Dashboard tab |
 
 ## 🧠 Architecture
 
@@ -27,7 +28,7 @@ ESP32 (Spectral Scanner / Captive Portal)
   ⮕ USB Serial
       ⮕ FastAPI WarCore (Python 3.10+, PyTorch, Scapy, SQLite)
         ⮕ MQTT / WebSocket Bus
-          ⮕ React Frontend (KRONOS UI) + Dashboards
+          ⮕ GTK Frontend + Dashboards
           ⮕ Optional: TL-WN722N (Monitor / Injection)
 ````
 
@@ -43,12 +44,10 @@ uvicorn main:app --reload
 # Tables are created automatically on first run
 ```
 
-### Frontend (React)
+### Frontend (GTK)
 
 ```bash
-cd frontend
-npm install
-npm start
+python frontend/main.py
 ```
 
 ### Cross-Platform Docker MQTT
@@ -62,22 +61,20 @@ docker compose up -d mqtt
 Then launch everything with `start-zeusnet.sh` (or `.bat` on Windows). See
 `docs/setup.md` for full setup instructions.
 
-### Optional GTK Desktop UI
+### GTK Desktop UI
 
-For a lightweight native desktop view of scanned networks, run the GTK app:
+For a native desktop view with tabs for networks, dashboards and map,
+run the GTK app:
 
 ```bash
-python gtk_app/main.py
+python frontend/main.py
 ```
 
 This requires the `PyGObject` package built with GTK **4**.
-The window now displays SSID, BSSID, channel, authentication mode,
-RSSI and timestamp, refreshing every few seconds. A small control bar
-lets you change the ESP32 scan interval, toggle scanning on/off, switch
-between SAFE and AGGRESSIVE modes or update the serial port. An attack
-panel can trigger TL‑WN722N operations such as deauth or rogue‑AP
-deployment. A status bar indicates the last successful update or any
-errors.
+The window now shows a network table with filters, attack panel, a
+dashboard graph of top RSSI values and a heatmap tab. Controls let you
+change scan interval, toggle scanning, switch modes or select the serial
+port. A status bar reports the last successful update or any errors.
 
 ### Auto Start with systemd (Linux)
 
@@ -117,10 +114,8 @@ ZeusNet/
 │   ├── api/              # Scan, device, export endpoints
 │   ├── alerts/           # Anomaly detection, MAC tracker
 │   └── c2/               # Command bus
-├── frontend/             # React UI
-│   ├── pages/            # Views: Dashboard, Devices, Alerts
-│   └── components/       # SignalChart, ExportButton, etc.
-└── README.md
+├── frontend/             # GTK UI
+│   └── main.py          # Desktop application
 ```
 
 ## ⚠️ Mode Switching

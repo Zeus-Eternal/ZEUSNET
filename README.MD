@@ -50,6 +50,14 @@ uvicorn main:app --reload
 python frontend/main.py
 ```
 
+### Web UI (React)
+
+```bash
+cd webui
+npm install
+npm run dev
+```
+
 ### Cross-Platform Docker MQTT
 
 To avoid installing Mosquitto manually, run it via Docker:
@@ -71,6 +79,10 @@ python frontend/main.py
 ```
 
 This requires the `PyGObject` package built with GTK **4**.
+If upgrading from an older GTK 3 build, remove any references to
+`Gtk.ApplicationFlags.DEFAULT_FLAGS` or other deprecated APIs—GTK 4 no
+longer exposes these constants. GTK 4 also simplifies app startup, so
+`Application.run()` is called without any arguments.
 The window now shows a network table with filters, attack panel, a
 dashboard graph of top RSSI values and a heatmap tab. Controls let you
 change scan interval, toggle scanning, switch modes or select the serial
@@ -116,6 +128,7 @@ ZeusNet/
 │   └── c2/               # Command bus
 ├── frontend/             # GTK UI
 │   └── main.py          # Desktop application
+├── webui/                # React web interface
 ```
 
 ## ⚠️ Mode Switching

@@ -28,3 +28,4 @@
 ├── 📁 frontend
 │   └── 📄 main.py
 ├── 📄 requirements.txt 
+├── 📁 webui

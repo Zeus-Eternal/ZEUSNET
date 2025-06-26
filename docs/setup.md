@@ -31,6 +31,20 @@ python frontend/main.py
 ```
 
 Requires the `PyGObject` package with GTK **4** support.
+If you encounter an error about `Gtk.ApplicationFlags` when launching the
+UI, ensure you are not using leftover GTK 3 snippets; the new code relies
+solely on GTK 4 APIs. The `Application.run()` method also no longer takes a
+`None` parameter in GTK 4.
+
+### 🌐 Web UI (React)
+
+Run the browser-based dashboard with Vite:
+
+```bash
+cd webui
+npm install
+npm run dev
+```
 
 ### ⚙️ Enable systemd Service (Optional)
 

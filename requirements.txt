@@ -44,5 +44,5 @@ psutil==5.9.8            # CPU/memory/net stat (for feedback)
 coloredlogs==15.0.1
 # Serial port discovery
 pyudev==0.24.1
-# --- GTK Desktop UI ---
+# --- GTK Desktop UI (built with GTK 4) ---
 PyGObject==3.46.0

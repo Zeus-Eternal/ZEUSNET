@@ -34,4 +34,3 @@ def update_settings(data: SettingsUpdate):
         config.SERIAL_BAUD = data.serial_baud
         os.environ["SERIAL_BAUD"] = str(data.serial_baud)
     return get_settings()
-

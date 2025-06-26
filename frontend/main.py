@@ -10,11 +10,11 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, GLib, GdkPixbuf
+from gi.repository import Gtk, GLib, GdkPixbuf  # noqa: E402
 
 try:
     gi.require_version("WebKit2", "4.0")
-    from gi.repository import WebKit2
+    from gi.repository import WebKit2  # noqa: E402
 except Exception:  # pragma: no cover - optional dependency
     WebKit2 = None
 

@@ -47,7 +47,7 @@ uvicorn main:app --reload
 ### Frontend (GTK)
 
 ```bash
-python frontend/main.py
+python -m frontend.main
 ```
 
 ### Web UI (React)
@@ -75,7 +75,7 @@ For a native desktop view with tabs for networks, dashboards and map,
 run the GTK app:
 
 ```bash
-python frontend/main.py
+python -m frontend.main
 ```
 
 This requires the `PyGObject` package built with GTK **4**.
@@ -124,9 +124,26 @@ ZeusNet/
 │   ├── alerts/           # Anomaly detection, MAC tracker
 │   └── c2/               # Command bus
 ├── frontend/             # GTK UI
-│   └── main.py          # Desktop application
+│   ├── main.py           # Entry point
+│   ├── app.py            # GTK application class
+│   ├── views/            # UI views (tabs)
+│   ├── widgets/          # Reusable components
+│   ├── services/         # API clients & business logic
+│   └── utils/            # Helpers (logging, async)
 ├── webui/                # React web interface
+└── requirements.txt      # Python dependencies
 ```
+
+### Developer Guide
+
+Run the GTK frontend via:
+
+```bash
+python -m frontend.main
+```
+
+The frontend modules follow a separation-of-concerns layout with views,
+services and widgets. See `frontend/main.py` for the entry point.
 
 ## ⚠️ Mode Switching
 

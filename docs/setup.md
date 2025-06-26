@@ -45,6 +45,16 @@ npm install
 npm run dev
 ```
 
+### 🌐 Web UI (React)
+
+Run the browser-based dashboard with Vite:
+
+```bash
+cd webui
+npm install
+npm run dev
+```
+
 ### ⚙️ Enable systemd Service (Optional)
 
 ```bash

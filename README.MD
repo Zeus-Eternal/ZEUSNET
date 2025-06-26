@@ -50,6 +50,14 @@ uvicorn main:app --reload
 python frontend/main.py
 ```
 
+### Web UI (React)
+
+```bash
+cd webui
+npm install
+npm run dev
+```
+
 ### Cross-Platform Docker MQTT
 
 To avoid installing Mosquitto manually, run it via Docker:
@@ -116,6 +124,7 @@ ZeusNet/
 │   └── c2/               # Command bus
 ├── frontend/             # GTK UI
 │   └── main.py          # Desktop application
+├── webui/                # React web interface
 ```
 
 ## ⚠️ Mode Switching

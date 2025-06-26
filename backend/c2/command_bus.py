@@ -1,4 +1,3 @@
-import os
 import json
 import time
 import logging
@@ -18,9 +17,6 @@ import paho.mqtt.client as mqtt
 from backend.db import SessionLocal
 from backend.models import WiFiScan
 
-# ESP32 -> PC opcodes
-OPCODE_SCAN_RESULT = 0x10
-
 from backend.settings import (
     SERIAL_PORT,
     SERIAL_BAUD,
@@ -28,6 +24,9 @@ from backend.settings import (
     MQTT_TOPIC,
     RETRY_LIMIT,
 )
+
+# ESP32 -> PC opcodes
+OPCODE_SCAN_RESULT = 0x10
 
 logger = logging.getLogger("command_bus")
 
@@ -38,7 +37,13 @@ class SerialCommandBus:
     CONFIG_DIR = Path.home() / ".config" / "zeusnet"
     PERSIST_FILE = CONFIG_DIR / "last_serial"
 
-    def __init__(self, baud_rate: int = SERIAL_BAUD, backoff_base: int = 2, backoff_limit: int = 60, error_limit: int = 3):
+    def __init__(
+        self,
+        baud_rate: int = SERIAL_BAUD,
+        backoff_base: int = 2,
+        backoff_limit: int = 60,
+        error_limit: int = 3,
+    ):
         self.CONFIG_DIR.mkdir(parents=True, exist_ok=True)
         self.baud_rate = baud_rate
         self.backoff_base = backoff_base
@@ -60,13 +65,17 @@ class SerialCommandBus:
             self.udev_context = pyudev.Context()
             self.udev_monitor = pyudev.Monitor.from_netlink(self.udev_context)
             self.udev_monitor.filter_by(subsystem="tty")
-            self.udev_observer = pyudev.MonitorObserver(self.udev_monitor, self._udev_callback)
+            self.udev_observer = pyudev.MonitorObserver(
+                self.udev_monitor, self._udev_callback
+            )
             self.udev_observer.start()
         else:
             self.udev_observer = None
 
         self.read_thread = threading.Thread(target=self._read_loop, daemon=True)
-        self.reconnect_thread = threading.Thread(target=self._reconnect_loop, daemon=True)
+        self.reconnect_thread = threading.Thread(
+            target=self._reconnect_loop, daemon=True
+        )
 
     def _load_last_known_port(self) -> str | None:
         if self.PERSIST_FILE.exists():
@@ -233,7 +242,7 @@ class MQTTCommandRelay:
             logger.warning(f"[MQTT] Failed to publish: {e}")
 
     def start(self):
-        logger.info(f"[MQTT] Starting MQTT relay...")
+        logger.info("[MQTT] Starting MQTT relay...")
         try:
             self.client.connect(MQTT_BROKER)
             self.client.loop_start()

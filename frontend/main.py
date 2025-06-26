@@ -234,7 +234,6 @@ class NetworkWindow(Gtk.ApplicationWindow):
         dashboard_page.append(self.chart_image)
         dashboard_page.set_hexpand(True)
         dashboard_page.set_vexpand(True)
-
         self.notebook.append_page(dashboard_page, Gtk.Label(label="Dashboard"))
 
     def _create_map_tab(self):

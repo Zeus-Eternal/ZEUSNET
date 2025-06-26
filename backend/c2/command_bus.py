@@ -257,6 +257,7 @@ def store_scan_to_db(data: dict) -> None:
         )
         session.add(scan)
         session.commit()
+        logger.debug(f"[DB] Stored scan: {scan.ssid} {scan.bssid}")
     except Exception as e:
         logger.warning(f"[DB] Failed to store scan: {e}")
         session.rollback()

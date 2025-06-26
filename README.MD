@@ -81,7 +81,6 @@ sudo systemctl start zeusnet-serial
 ```
 
 The service uses a cached serial port stored under `~/.config/zeusnet/last_serial`.
-
 ### Flash ESP32
 
 ```bash

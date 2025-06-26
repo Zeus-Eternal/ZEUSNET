@@ -11,6 +11,7 @@ from backend.api import (
 from fastapi.middleware.cors import CORSMiddleware
 from backend.routes import networks as demo_networks
 from backend.c2.command_bus import start_bus
+from backend.db import init_db
 
 app = FastAPI(
     title="ZeusNet API",
@@ -54,4 +55,5 @@ app.include_router(diagnostic.router, prefix="/api")
 # 🚀 Background startup tasks
 @app.on_event("startup")
 def _startup():
+    init_db()
     start_bus()

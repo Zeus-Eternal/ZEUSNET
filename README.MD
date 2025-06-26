@@ -38,6 +38,7 @@ cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 uvicorn main:app --reload
+# Tables are created automatically on first run
 ```
 
 ### Frontend (React)
@@ -68,6 +69,11 @@ python gtk_app/main.py
 ```
 
 This requires the `PyGObject` package built with GTK **4**.
+The window now displays SSID, BSSID, channel, authentication mode,
+RSSI and timestamp, refreshing every few seconds. A small control bar
+lets you change the ESP32 scan interval, toggle scanning on/off and
+trigger a remote reboot. A status bar indicates the last successful
+update or any errors.
 
 ### Auto Start with systemd (Linux)
 
@@ -124,6 +130,12 @@ ZEUSNET_MODE=SAFE
 
 > **SAFE Mode** disables any packet injection or spoofing.
 > **AGGRESSIVE Mode** activates deauth, rogue AP, and swarm tactics (for legal use only).
+
+### Environment Variables
+
+| Variable      | Purpose                                | Default |
+|---------------|----------------------------------------|---------|
+| `RETRY_LIMIT` | Serial read errors before reconnecting | `3`     |
 
 ## 🛰️ TL-WN722N Tools
 

@@ -55,10 +55,13 @@ class NetworkWindow(Gtk.ApplicationWindow):
         
         # Create notebook
         self.notebook = Gtk.Notebook()
+        self.notebook.set_hexpand(True)
+        self.notebook.set_vexpand(True)
         self.main_box.append(self.notebook)
         
         # Status bar
         self.status_bar = Gtk.Statusbar()
+        self.status_bar.set_hexpand(True)
         self.main_box.append(self.status_bar)
         
         # Create tabs
@@ -99,6 +102,8 @@ class NetworkWindow(Gtk.ApplicationWindow):
         self.liststore = Gtk.ListStore(str, str, int, int, str, str)
         treeview = Gtk.TreeView(model=self.liststore)
         treeview.connect("row-activated", self.on_row_activated)
+        treeview.set_hexpand(True)
+        treeview.set_vexpand(True)
         
         columns = [
             ("SSID", 0),
@@ -117,6 +122,10 @@ class NetworkWindow(Gtk.ApplicationWindow):
         scrolled = Gtk.ScrolledWindow()
         scrolled.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         scrolled.set_child(treeview)
+        scrolled.set_hexpand(True)
+        scrolled.set_vexpand(True)
+        # ensure enough room for many rows
+        scrolled.set_min_content_height(400)
         
         # Filter controls
         self.filter_ssid = Gtk.Entry(placeholder_text="SSID")
@@ -151,6 +160,8 @@ class NetworkWindow(Gtk.ApplicationWindow):
         
         # Assemble tab
         network_page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        network_page.set_hexpand(True)
+        network_page.set_vexpand(True)
         network_page.append(filter_box)
         network_page.append(scrolled)
         network_page.append(scan_controls)
@@ -176,6 +187,8 @@ class NetworkWindow(Gtk.ApplicationWindow):
         
         settings_page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         settings_page.append(settings_box)
+        settings_page.set_hexpand(True)
+        settings_page.set_vexpand(True)
         
         self.notebook.append_page(
             settings_page,
@@ -203,6 +216,8 @@ class NetworkWindow(Gtk.ApplicationWindow):
         
         attack_page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         attack_page.append(attack_controls)
+        attack_page.set_hexpand(True)
+        attack_page.set_vexpand(True)
         
         self.notebook.append_page(
             attack_page,
@@ -212,18 +227,15 @@ class NetworkWindow(Gtk.ApplicationWindow):
     def _create_dashboard_tab(self):
         """Create the dashboard tab."""
         self.chart_image = Gtk.Image()
-        
+        self.chart_image.set_hexpand(True)
+        self.chart_image.set_vexpand(True)
+
         dashboard_page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         dashboard_page.append(self.chart_image)
-        self.notebook.append_page(dashboard_page, Gtk.Label(label="Dashboard"))
+        dashboard_page.set_hexpand(True)
+        dashboard_page.set_vexpand(True)
 
-        # ----- Map tab -----
-        if WEBKIT_AVAILABLE:
-            self.webview = WebKit2.WebView()
-            map_container = self.webview
-        else:
-            self.webview = None
-            map_container = Gtk.Label(label="WebKit2 not available")
+        self.notebook.append_page(dashboard_page, Gtk.Label(label="Dashboard"))
 
     def _create_map_tab(self):
         """Create the map tab (if WebKit is available)."""
@@ -231,9 +243,13 @@ class NetworkWindow(Gtk.ApplicationWindow):
             return
             
         self.webview = WebKit2.WebView()
-        
+        self.webview.set_hexpand(True)
+        self.webview.set_vexpand(True)
+
         map_page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         map_page.append(self.webview)
+        map_page.set_hexpand(True)
+        map_page.set_vexpand(True)
         
         self.notebook.append_page(
             map_page,
@@ -550,11 +566,6 @@ class NetworkWindow(Gtk.ApplicationWindow):
         loader.close()
         self.chart_image.set_from_pixbuf(loader.get_pixbuf())
 
-    def draw_map(self, data: list[dict]):
-        if not WEBKIT_AVAILABLE:
-            return
-        import folium
-
     def draw_map(self, data: List[Dict[str, Any]]) -> None:
         """Draw the network map (if WebKit is available)."""
         if not WEBKIT_AVAILABLE or not data:
@@ -603,10 +614,7 @@ class NetworkWindow(Gtk.ApplicationWindow):
 
 class ZeusApp(Gtk.Application):
     def __init__(self):
-        super().__init__(
-            application_id="com.zeusnet.viewer",
-            flags=Gtk.ApplicationFlags.DEFAULT_FLAGS
-        )
+        super().__init__(application_id="com.zeusnet.viewer")
         
     def do_activate(self) -> None:
         """Application activation handler."""
@@ -617,7 +625,7 @@ class ZeusApp(Gtk.Application):
 def main() -> None:
     """Main entry point."""
     app = ZeusApp()
-    exit_status = app.run(None)
+    exit_status = app.run()
     raise SystemExit(exit_status)
 
 

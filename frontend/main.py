@@ -20,14 +20,17 @@ logger = logging.getLogger(__name__)
 
 # GTK initialization
 gi.require_version("Gtk", "4.0")
-gi.require_version("WebKit2", "4.1")
-from gi.repository import Gtk, GLib, GdkPixbuf
+from gi.repository import Gtk, GLib, GdkPixbuf  # noqa: E402
 
 try:
-    from gi.repository import WebKit2
+    try:
+        gi.require_version("WebKit2", "4.1")
+    except ValueError:
+        gi.require_version("WebKit2", "4.0")
+    from gi.repository import WebKit2  # noqa: E402
+
     WEBKIT_AVAILABLE = True
-except ImportError:
-    logger.warning("WebKit2 not available - map functionality disabled")
+except Exception:  # pragma: no cover - optional dependency
     WebKit2 = None
     WEBKIT_AVAILABLE = False
 
@@ -212,11 +215,15 @@ class NetworkWindow(Gtk.ApplicationWindow):
         
         dashboard_page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         dashboard_page.append(self.chart_image)
-        
-        self.notebook.append_page(
-            dashboard_page,
-            Gtk.Label(label="Dashboard")
-        )
+        self.notebook.append_page(dashboard_page, Gtk.Label(label="Dashboard"))
+
+        # ----- Map tab -----
+        if WEBKIT_AVAILABLE:
+            self.webview = WebKit2.WebView()
+            map_container = self.webview
+        else:
+            self.webview = None
+            map_container = Gtk.Label(label="WebKit2 not available")
 
     def _create_map_tab(self):
         """Create the map tab (if WebKit is available)."""
@@ -526,42 +533,27 @@ class NetworkWindow(Gtk.ApplicationWindow):
         """Draw the RSSI chart."""
         if not data:
             return
-            
-        try:
-            # Get top 10 networks by RSSI
-            top = sorted(
-                data,
-                key=lambda d: d.get("rssi", -100),
-                reverse=True
-            )[:10]
-            
-            ssids = [d.get("ssid", "Unknown")[:20] for d in top]
-            rssis = [d.get("rssi", 0) for d in top]
-            
-            # Create figure
-            fig = Figure(figsize=(8, 4), dpi=100)
-            ax = fig.add_subplot(111)
-            
-            # Customize appearance
-            ax.bar(ssids, rssis, color='#3498db')
-            ax.set_ylabel('Signal Strength (RSSI)')
-            ax.set_ylim(-100, 0)
-            ax.set_title('Top Networks by Signal Strength')
-            ax.grid(True, linestyle='--', alpha=0.7)
-            ax.tick_params(axis='x', rotation=45, labelsize=8)
-            
-            # Convert to pixbuf
-            buf = io.BytesIO()
-            FigureCanvasAgg(fig).print_png(buf)
-            loader = GdkPixbuf.PixbufLoader.new_with_type("png")
-            loader.write(buf.getvalue())
-            loader.close()
-            
-            # Update image
-            self.chart_image.set_from_pixbuf(loader.get_pixbuf())
-        except Exception as e:
-            logger.exception("Error drawing chart")
-            self.update_status(f"Chart error: {str(e)}")
+        top = sorted(data, key=lambda d: d.get("rssi", -100), reverse=True)[:10]
+        ssids = [d.get("ssid", "") for d in top]
+        rssis = [d.get("rssi", 0) for d in top]
+
+        fig = Figure(figsize=(6, 3))
+        ax = fig.add_subplot(111)
+        ax.bar(ssids, rssis, color="steelblue")
+        ax.set_ylabel("RSSI")
+        ax.set_ylim(-100, 0)
+        ax.tick_params(axis="x", rotation=45, labelsize=8)
+        buf = io.BytesIO()
+        FigureCanvasAgg(fig).print_png(buf)
+        loader = GdkPixbuf.PixbufLoader.new_with_type("png")
+        loader.write(buf.getvalue())
+        loader.close()
+        self.chart_image.set_from_pixbuf(loader.get_pixbuf())
+
+    def draw_map(self, data: list[dict]):
+        if not WEBKIT_AVAILABLE:
+            return
+        import folium
 
     def draw_map(self, data: List[Dict[str, Any]]) -> None:
         """Draw the network map (if WebKit is available)."""

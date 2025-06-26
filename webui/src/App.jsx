@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ModeToggle from "./components/ModeToggle";
-import AttackForm from "./components/AttackForm";
+import NetworkOpsPanel from "./components/NetworkOpsPanel";
 import TerminalLog from "./components/TerminalLog";
 
 export default function App() {
@@ -14,7 +14,7 @@ export default function App() {
     <div className="dashboard">
       <h1>ZeusNet Control Center</h1>
       <ModeToggle mode={mode} setMode={setMode} />
-      <AttackForm log={log} />
+      <NetworkOpsPanel log={log} />
       <TerminalLog lines={logLines} />
     </div>
   );

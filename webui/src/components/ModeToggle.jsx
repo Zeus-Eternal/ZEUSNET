@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 export default function ModeToggle({ mode, setMode }) {
   return (
     <div className="toggle-container">

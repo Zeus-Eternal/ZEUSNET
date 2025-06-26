@@ -21,4 +21,11 @@ docker compose up -d mqtt
 
 ```bash
 bash start-zeusnet.sh  # or start-zeusnet.bat on Windows
+
+### 📺 GTK Desktop Viewer (Optional)
+
+Launch a minimal desktop UI that lists scanned networks:
+
+```bash
+python gtk_app/main.py
 ```

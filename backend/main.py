@@ -9,6 +9,7 @@ from backend.api import (
     settings as settings_api,
     nic,
     diagnostic,
+    covert_ops_agent,
 )
 from fastapi.middleware.cors import CORSMiddleware
 from backend.routes import networks as demo_networks
@@ -57,6 +58,8 @@ app.include_router(command.router, prefix="/api")
 app.include_router(settings_api.router, prefix="/api")
 app.include_router(nic.router, prefix="/api")
 app.include_router(diagnostic.router, prefix="/api")
+app.include_router(covert_ops_agent.router, prefix="/api")
+
 
 
 # 🚀 Background startup tasks

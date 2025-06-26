@@ -37,7 +37,7 @@ app.add_middleware(
 # 📦 Mount all routers
 app.include_router(scan.router, prefix="/api")
 app.include_router(networks.router, prefix="/api")
-app.include_router(demo_networks.router)  # `/networks`
+app.include_router(demo_networks.router)
 app.include_router(devices.router, prefix="/api")
 app.include_router(export.router, prefix="/api")
 app.include_router(alerts.router, prefix="/api")

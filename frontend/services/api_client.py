@@ -20,7 +20,6 @@ class NetworkAPIClient:
                     return await resp.json()
                 raise APIError(f"HTTP {resp.status}")
 
-
 class SettingsAPIClient:
     """Client for application settings endpoints."""
 

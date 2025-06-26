@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """ZeusNet Frontend Main Entry Point."""
-
 import os
 import sys
 
@@ -18,8 +17,7 @@ except ImportError:  # pragma: no cover - fallback for direct execution
         sys.path.insert(0, PARENT_DIR)
     from frontend.app import ZeusApp
     from frontend.utils.logging import configure_logging
-
-
+    
 def main() -> int:
     """Application entry point."""
     configure_logging()

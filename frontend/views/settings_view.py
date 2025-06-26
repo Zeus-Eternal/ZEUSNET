@@ -152,4 +152,3 @@ class SettingsView(Gtk.Box):
             self.status_label.set_text("Failed to update watchdog")
 
         self.api_client.set_watchdog_async(enabled, _on_success, _on_error)
-

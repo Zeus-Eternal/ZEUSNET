@@ -17,7 +17,6 @@ except ImportError:  # pragma: no cover - fallback when executed as script
         sys.path.insert(0, GRANDPARENT_DIR)
     from frontend.services.api_client import NetworkAPIClient
 
-
 class NetworkList(Gtk.ScrolledWindow):
     """Simple network list using a Gtk.ListBox."""
 

@@ -70,8 +70,10 @@ python gtk_app/main.py
 
 This requires the `PyGObject` package built with GTK **4**.
 The window now displays SSID, BSSID, channel, authentication mode,
-RSSI and timestamp, refreshing every few seconds. A status bar
-indicates the time of the last successful update or any errors.
+RSSI and timestamp, refreshing every few seconds. A small control bar
+lets you change the ESP32 scan interval, toggle scanning on/off and
+trigger a remote reboot. A status bar indicates the last successful
+update or any errors.
 
 ### Auto Start with systemd (Linux)
 

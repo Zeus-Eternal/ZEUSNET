@@ -6,6 +6,7 @@ import aiohttp
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, GLib
 API_URL = "http://localhost:8000/api/networks?limit=50"
+CMD_URL = "http://localhost:8000/api/command"
 
 
 class NetworkWindow(Gtk.ApplicationWindow):
@@ -33,10 +34,29 @@ class NetworkWindow(Gtk.ApplicationWindow):
         scrolled.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         scrolled.set_child(treeview)
 
+        # Controls
+        self.interval_entry = Gtk.Entry()
+        self.interval_entry.set_placeholder_text("Interval ms")
+        btn_set = Gtk.Button(label="Apply")
+        btn_set.connect("clicked", self.on_set_interval)
+
+        self.toggle_scan = Gtk.ToggleButton(label="Scanning")
+        self.toggle_scan.set_active(True)
+        self.toggle_scan.connect("toggled", self.on_toggle_scan)
+
+        btn_reboot = Gtk.Button(label="Reboot")
+        btn_reboot.connect("clicked", self.on_reboot)
+
+        controls = Gtk.Box(spacing=6)
+        controls.append(self.interval_entry)
+        controls.append(btn_set)
+        controls.append(self.toggle_scan)
+        controls.append(btn_reboot)
         # Status label showing last update or errors
         self.status_label = Gtk.Label(xalign=0)
 
         container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        container.append(controls)
         container.append(scrolled)
         container.append(self.status_label)
         self.set_child(container)
@@ -94,6 +114,32 @@ class NetworkWindow(Gtk.ApplicationWindow):
     def refresh(self):
         asyncio.run_coroutine_threadsafe(self.fetch(), self.loop)
         return True
+
+    async def send_command(self, opcode: int, payload: dict | None = None):
+        try:
+            async with aiohttp.ClientSession() as session:
+                await session.post(CMD_URL, json={"opcode": opcode, "payload": payload or {}})
+        except Exception as e:
+            GLib.idle_add(self.update_status, f"Cmd error: {e}")
+
+    def on_set_interval(self, _button):
+        try:
+            value = int(self.interval_entry.get_text())
+        except ValueError:
+            self.update_status("Invalid interval")
+            return
+        asyncio.run_coroutine_threadsafe(
+            self.send_command(1, {"interval": value}), self.loop
+        )
+
+    def on_toggle_scan(self, button):
+        state = button.get_active()
+        asyncio.run_coroutine_threadsafe(
+            self.send_command(1, {"scanning": state}), self.loop
+        )
+
+    def on_reboot(self, _button):
+        asyncio.run_coroutine_threadsafe(self.send_command(32), self.loop)
 
 
 class ZeusApp(Gtk.Application):

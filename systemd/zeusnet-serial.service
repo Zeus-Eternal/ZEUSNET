@@ -1,0 +1,13 @@
+[Unit]
+Description=ZeusNet Serial Command Bus
+After=network.target
+
+[Service]
+User=zeus
+WorkingDirectory=/media/zeus/Development/GitHub/ZEUSNET
+ExecStart=/media/zeus/Development/GitHub/ZEUSNET/.venv/bin/python backend/c2/command_bus.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

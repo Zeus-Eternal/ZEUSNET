@@ -48,6 +48,40 @@ npm install
 npm start
 ```
 
+### Cross-Platform Docker MQTT
+
+To avoid installing Mosquitto manually, run it via Docker:
+
+```bash
+docker compose up -d mqtt
+```
+
+Then launch everything with `start-zeusnet.sh` (or `.bat` on Windows). See
+`docs/setup.md` for full setup instructions.
+
+### Optional GTK Desktop UI
+
+For a lightweight native desktop view of scanned networks, run the GTK app:
+
+```bash
+python gtk_app/main.py
+```
+
+This requires the `PyGObject` package.
+
+### Auto Start with systemd (Linux)
+
+For persistent operation, install the provided service file:
+
+```bash
+sudo cp systemd/zeusnet-serial.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable zeusnet-serial
+sudo systemctl start zeusnet-serial
+```
+
+The service uses a cached serial port stored under `~/.config/zeusnet/last_serial`.
+
 ### Flash ESP32
 
 ```bash

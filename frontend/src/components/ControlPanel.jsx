@@ -3,7 +3,7 @@ import api from '../api';
 
 export default function ControlPanel() {
   const sendCommand = (opcode, payload = {}) => {
-    api.post('/command', { opcode, payload });
+    api.post('/api/command', { opcode, payload });
   };
 
   return (

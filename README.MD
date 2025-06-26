@@ -68,6 +68,8 @@ python gtk_app/main.py
 ```
 
 This requires the `PyGObject` package built with GTK **4**.
+The window now displays SSID, BSSID, channel, authentication mode,
+RSSI and timestamp, refreshing every few seconds.
 
 ### Auto Start with systemd (Linux)
 

@@ -5,6 +5,7 @@ import Devices from './pages/Devices';
 import Alerts from './pages/Alerts';
 import MapView from './pages/MapView';
 import Pentest from './pages/Pentest';
+import Networks from './pages/Networks';
 import NavBar from './components/NavBar';
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/devices" element={<Devices />} />
         <Route path="/alerts" element={<Alerts />} />
         <Route path="/map" element={<MapView />} />
+        <Route path="/networks" element={<Networks />} />
         <Route path="/pentest" element={<Pentest />} />
       </Routes>
     </BrowserRouter>

@@ -28,6 +28,10 @@ class AttackService:
             return ["echo", "pmkid"]
         if mode == "swarm":
             return ["echo", "swarm"]
+        if mode == "survey":
+            return ["echo", "survey"]
+        if mode == "jam" and target:
+            return ["echo", f"jam {target}"]
         raise HTTPException(status_code=400, detail="Invalid attack parameters")
 
     def launch(self, mode: str, target: str | None, channel: int | None) -> int:

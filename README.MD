@@ -18,6 +18,7 @@
 | 🧪 TL‑WN722N automation      | Controlled packet injection, handshake captures  |
 | 🗺️ Heatmap dashboard         | Leaflet-powered SSID and RSSI visualization      |
 | 🎛️ In-app pentest controls  | Toggle mode and launch attacks via UI |
+| 📜 Advanced network list     | Filter scans by SSID or auth mode |
 
 ## 🧠 Architecture
 
@@ -162,6 +163,7 @@ POST /api/nic/attack
   "channel": 6
 }
 ```
+Additional modes such as `survey` and `jam` provide blue‑team defensive actions.
 
 ## 🗃️ Backup Job (Linux crontab)
 

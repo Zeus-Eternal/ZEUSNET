@@ -2,4 +2,5 @@
 # gtk_launcher.py
 import sys
 import os
-os.execv(sys.executable, ["python3", "gtk_app/main.py"])
+
+os.execv(sys.executable, ["python3", "frontend/main.py"])

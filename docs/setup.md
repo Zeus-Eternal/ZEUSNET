@@ -2,7 +2,6 @@
 
 ### 🛠 Requirements
 - Python 3.10+
-- Node.js 20+
 - Docker
 - Virtualenv or venv
 
@@ -13,7 +12,6 @@ cd zeusnet
 python -m venv .venv
 source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 pip install -r backend/requirements.txt
-npm install --prefix frontend
 docker compose up -d mqtt
 ```
 
@@ -23,12 +21,13 @@ docker compose up -d mqtt
 bash start-zeusnet.sh  # or start-zeusnet.bat on Windows
 ```
 
-### 📺 GTK Desktop Viewer (Optional)
+### 📺 GTK Desktop Viewer
 
-Launch a minimal desktop UI that lists scanned networks:
+Launch the desktop UI with tabs for network lists, signal charts,
+map view and attack controls:
 
 ```bash
-python gtk_app/main.py
+python frontend/main.py
 ```
 
 Requires the `PyGObject` package with GTK **4** support.

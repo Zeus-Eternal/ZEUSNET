@@ -124,9 +124,26 @@ ZeusNet/
 │   ├── alerts/           # Anomaly detection, MAC tracker
 │   └── c2/               # Command bus
 ├── frontend/             # GTK UI
-│   └── main.py          # Desktop application
+│   ├── main.py           # Entry point
+│   ├── app.py            # GTK application class
+│   ├── views/            # UI views (tabs)
+│   ├── widgets/          # Reusable components
+│   ├── services/         # API clients & business logic
+│   └── utils/            # Helpers (logging, async)
 ├── webui/                # React web interface
+└── requirements.txt      # Python dependencies
 ```
+
+### Developer Guide
+
+Run the GTK frontend via:
+
+```bash
+python -m frontend.main
+```
+
+The frontend modules follow a separation-of-concerns layout with views,
+services and widgets. See `frontend/main.py` for the entry point.
 
 ## ⚠️ Mode Switching
 

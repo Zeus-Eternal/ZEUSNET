@@ -52,7 +52,6 @@ class NetworkWindow(Gtk.ApplicationWindow):
         controls.append(btn_set)
         controls.append(self.toggle_scan)
         controls.append(btn_reboot)
-
         # Status label showing last update or errors
         self.status_label = Gtk.Label(xalign=0)
 

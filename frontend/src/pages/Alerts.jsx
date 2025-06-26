@@ -5,7 +5,7 @@ export default function Alerts() {
   const [alerts, setAlerts] = useState([]);
 
   useEffect(() => {
-    api.get('/alerts').then(res => setAlerts(res.data));
+    api.get('/api/alerts').then(res => setAlerts(res.data));
   }, []);
 
   return (

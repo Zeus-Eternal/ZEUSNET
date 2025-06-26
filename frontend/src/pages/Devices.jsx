@@ -5,7 +5,7 @@ export default function Devices() {
   const [devices, setDevices] = useState([]);
 
   useEffect(() => {
-    api.get('/devices').then(res => setDevices(res.data));
+    api.get('/api/devices').then(res => setDevices(res.data));
   }, []);
 
   return (

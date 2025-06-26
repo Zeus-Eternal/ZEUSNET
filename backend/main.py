@@ -6,6 +6,8 @@ from backend.api import (
     export,
     alerts,
     command,
+    settings as settings_api,
+    nic,
     diagnostic,
 )
 from fastapi.middleware.cors import CORSMiddleware
@@ -50,6 +52,8 @@ app.include_router(devices.router, prefix="/api")
 app.include_router(export.router, prefix="/api")
 app.include_router(alerts.router, prefix="/api")
 app.include_router(command.router, prefix="/api")
+app.include_router(settings_api.router, prefix="/api")
+app.include_router(nic.router, prefix="/api")
 app.include_router(diagnostic.router, prefix="/api")
 
 # 🚀 Background startup tasks

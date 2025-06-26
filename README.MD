@@ -17,6 +17,7 @@
 | 🔥 Deauth & AP cloning       | Enabled via TL‑WN722N NIC in aggressive mode     |
 | 🧪 TL‑WN722N automation      | Controlled packet injection, handshake captures  |
 | 🗺️ Heatmap dashboard         | Leaflet-powered SSID and RSSI visualization      |
+| 🎛️ In-app pentest controls  | Toggle mode and launch attacks via UI |
 
 ## 🧠 Architecture
 
@@ -136,6 +137,9 @@ ZEUSNET_MODE=SAFE
 | Variable      | Purpose                                | Default |
 |---------------|----------------------------------------|---------|
 | `RETRY_LIMIT` | Serial read errors before reconnecting | `3`     |
+
+Call `GET /api/settings` to view current mode and serial configuration. Use
+`POST /api/settings` with `{"mode": "AGGRESSIVE"}` to switch modes at runtime.
 
 ## 🛰️ TL-WN722N Tools
 

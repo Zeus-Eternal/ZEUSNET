@@ -21,7 +21,6 @@ docker compose up -d mqtt
 
 ```bash
 bash start-zeusnet.sh  # or start-zeusnet.bat on Windows
-```
 
 ### 📺 GTK Desktop Viewer (Optional)
 

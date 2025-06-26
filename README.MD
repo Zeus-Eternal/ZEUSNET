@@ -59,6 +59,7 @@ docker compose up -d mqtt
 Then launch everything with `start-zeusnet.sh` (or `.bat` on Windows). See
 `docs/setup.md` for full setup instructions.
 
+<<<<<<< r3mqno-codex/check-and-update-ui-for-production-readiness
 ### Optional GTK Desktop UI
 
 For a lightweight native desktop view of scanned networks, run the GTK app:
@@ -69,6 +70,8 @@ python gtk_app/main.py
 
 This requires the `PyGObject` package.
 
+=======
+>>>>>>> main
 ### Flash ESP32
 
 ```bash

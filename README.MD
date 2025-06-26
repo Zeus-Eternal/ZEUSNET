@@ -163,8 +163,10 @@ ZEUSNET_MODE=SAFE
 |---------------|----------------------------------------|---------|
 | `RETRY_LIMIT` | Serial read errors before reconnecting | `3`     |
 
-Call `GET /api/settings` to view current mode and serial configuration. Use
-`POST /api/settings` with `{"mode": "AGGRESSIVE"}` to switch modes at runtime.
+Call `GET /api/settings` to view mode, serial port and watchdog status. Use
+`POST /api/settings` with fields like `{"mode": "AGGRESSIVE"}`,
+`{"serial_port": "/dev/ttyUSB0"}` or `{"watchdog": true}` to update them
+at runtime.
 
 ## 🛰️ TL-WN722N Tools
 
@@ -213,4 +215,5 @@ MIT for tools. Aggressive modules must comply with **your local laws**. This too
 
 > "Observe silently. Analyze ruthlessly. Dominate ethically."
 > — *ZeusNet WarCore, Operational Directive*
+
 

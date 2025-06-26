@@ -60,8 +60,6 @@ app.include_router(nic.router, prefix="/api")
 app.include_router(diagnostic.router, prefix="/api")
 app.include_router(covert_ops_agent.router, prefix="/api")
 
-
-
 # 🚀 Background startup tasks
 @app.on_event("startup")
 def _startup():

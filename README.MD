@@ -79,6 +79,9 @@ python frontend/main.py
 ```
 
 This requires the `PyGObject` package built with GTK **4**.
+If upgrading from an older GTK 3 build, remove any references to
+`Gtk.ApplicationFlags.DEFAULT_FLAGS` or other deprecated APIs—GTK 4
+no longer exposes these constants.
 The window now shows a network table with filters, attack panel, a
 dashboard graph of top RSSI values and a heatmap tab. Controls let you
 change scan interval, toggle scanning, switch modes or select the serial

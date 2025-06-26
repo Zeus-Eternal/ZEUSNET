@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+"""ZeusNet Frontend Main Entry Point."""
 import os
 import sys
 
 import gi
+gi.require_version("Gtk", "4.0")
 from gi.repository import GLib
 
 try:  # Allow execution as a script without the -m flag
@@ -14,7 +17,7 @@ except ImportError:  # pragma: no cover - fallback for direct execution
         sys.path.insert(0, PARENT_DIR)
     from frontend.app import ZeusApp
     from frontend.utils.logging import configure_logging
-
+    
 def main() -> int:
     """Application entry point."""
     configure_logging()

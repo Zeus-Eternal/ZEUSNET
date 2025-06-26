@@ -1,9 +1,21 @@
 """Network list widget."""
 
+import gi
+gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk
 
-from ..services.api_client import NetworkAPIClient
+try:  # Allow running this module directly
+    from ..services.api_client import NetworkAPIClient
+except ImportError:  # pragma: no cover - fallback when executed as script
+    import os
+    import sys
 
+    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+    PARENT_DIR = os.path.dirname(CURRENT_DIR)
+    GRANDPARENT_DIR = os.path.dirname(PARENT_DIR)
+    if GRANDPARENT_DIR not in sys.path:
+        sys.path.insert(0, GRANDPARENT_DIR)
+    from frontend.services.api_client import NetworkAPIClient
 
 class NetworkList(Gtk.ScrolledWindow):
     """Simple network list using a Gtk.ListBox."""

@@ -117,6 +117,8 @@ class NetworkWindow(Gtk.ApplicationWindow):
         scrolled = Gtk.ScrolledWindow()
         scrolled.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         scrolled.set_child(treeview)
+        scrolled.set_hexpand(True)
+        scrolled.set_vexpand(True)
         
         # Filter controls
         self.filter_ssid = Gtk.Entry(placeholder_text="SSID")

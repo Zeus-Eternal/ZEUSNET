@@ -32,7 +32,18 @@ class NetworkWindow(Gtk.ApplicationWindow):
         scrolled = Gtk.ScrolledWindow()
         scrolled.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         scrolled.set_child(treeview)
-        self.set_child(scrolled)
+
+        # Status label showing last update or errors
+        self.status_label = Gtk.Label(xalign=0)
+
+        container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        container.append(scrolled)
+        container.append(self.status_label)
+        self.set_child(container)
+
+        # Dedicated asyncio loop in a background thread
+        self.loop = asyncio.new_event_loop()
+        threading.Thread(target=self.loop.run_forever, daemon=True).start()
 
         # Dedicated asyncio loop in a background thread
         self.loop = asyncio.new_event_loop()
@@ -50,10 +61,39 @@ class NetworkWindow(Gtk.ApplicationWindow):
                     if resp.status == 200:
                         data = await resp.json()
                         GLib.idle_add(self.update_store, data)
+                        GLib.idle_add(
+                            self.update_status,
+                            f"Last update: {len(data)} networks",
+                        )
                     else:
-                        print(f"HTTP Error: {resp.status}")
+                        GLib.idle_add(
+                            self.update_status,
+                            f"HTTP Error: {resp.status}",
+                        )
         except Exception as e:
-            print("Error fetching networks:", e)
+            GLib.idle_add(self.update_status, f"Error: {e}")
+
+    def update_store(self, data):
+        """Update Gtk.ListStore from a background thread."""
+        self.liststore.clear()
+        for item in data:
+            timestamp = item.get("timestamp", "")
+            if isinstance(timestamp, str):
+                timestamp = timestamp.replace("T", " ").split(".")[0]
+            self.liststore.append([
+                item.get("ssid", "Unknown"),
+                item.get("bssid", "N/A"),
+                item.get("channel", 0),
+                item.get("rssi", 0),
+                item.get("auth", ""),
+                timestamp,
+            ])
+        return False
+
+    def update_status(self, text: str):
+        """Update status label safely from any thread."""
+        self.status_label.set_text(text)
+        return False
 
     def update_store(self, data):
         """Update Gtk.ListStore from a background thread."""

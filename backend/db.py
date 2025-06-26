@@ -7,6 +7,11 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False)
 Base = declarative_base()
 
 
+def init_db():
+    """Create database tables if they do not exist."""
+    Base.metadata.create_all(engine)
+
+
 def get_db():
     """Yield a new SQLAlchemy session and ensure closure."""
     db = SessionLocal()

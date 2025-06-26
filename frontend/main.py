@@ -1,11 +1,22 @@
 #!/usr/bin/env python3
 """ZeusNet Frontend Main Entry Point."""
 
+import os
+import sys
+
 import gi
 from gi.repository import GLib
 
-from .app import ZeusApp
-from .utils.logging import configure_logging
+try:  # Allow execution as a script without the -m flag
+    from .app import ZeusApp
+    from .utils.logging import configure_logging
+except ImportError:  # pragma: no cover - fallback for direct execution
+    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+    PARENT_DIR = os.path.dirname(CURRENT_DIR)
+    if PARENT_DIR not in sys.path:
+        sys.path.insert(0, PARENT_DIR)
+    from frontend.app import ZeusApp
+    from frontend.utils.logging import configure_logging
 
 
 def main() -> int:

@@ -48,6 +48,27 @@ npm install
 npm start
 ```
 
+### Cross-Platform Docker MQTT
+
+To avoid installing Mosquitto manually, run it via Docker:
+
+```bash
+docker compose up -d mqtt
+```
+
+Then launch everything with `start-zeusnet.sh` (or `.bat` on Windows). See
+`docs/setup.md` for full setup instructions.
+
+### Optional GTK Desktop UI
+
+For a lightweight native desktop view of scanned networks, run the GTK app:
+
+```bash
+python gtk_app/main.py
+```
+
+This requires the `PyGObject` package.
+
 ### Flash ESP32
 
 ```bash

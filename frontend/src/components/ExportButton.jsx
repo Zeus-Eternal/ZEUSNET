@@ -3,7 +3,7 @@ import api from '../api';
 
 export default function ExportButton() {
   const handleExport = async () => {
-    const res = await api.get('/export/csv', { responseType: 'blob' });
+    const res = await api.get('/api/export/csv', { responseType: 'blob' });
     const url = window.URL.createObjectURL(new Blob([res.data]));
     const link = document.createElement('a');
     link.href = url;

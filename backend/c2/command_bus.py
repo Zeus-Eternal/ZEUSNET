@@ -21,10 +21,7 @@ class SerialCommandBus:
         self.read_thread.start()
 
     def send(self, opcode: int, payload: dict = None):
-        packet = {
-            "opcode": opcode,
-            "payload": payload or {}
-        }
+        packet = {"opcode": opcode, "payload": payload or {}}
         raw = json.dumps(packet).encode("utf-8") + b"\n"
         self.ser.write(raw)
         logger.debug(f"[SerialBus] Sent to ESP32: {packet}")
@@ -92,6 +89,7 @@ class MQTTCommandRelay:
 # Entrypoint for integration
 command_bus = SerialCommandBus()
 mqtt_relay = MQTTCommandRelay(command_bus)
+
 
 def start_bus():
     command_bus.start()

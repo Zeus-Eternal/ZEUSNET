@@ -10,7 +10,8 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await api.get('/networks?limit=50');
+        const res = await api.get('/api/networks?limit=50');
+        console.log('Fetched networks:', res.data);
         setNetworks(res.data);
       } catch (err) {
         console.error('Error fetching networks:', err);

@@ -42,3 +42,5 @@ rich==13.7.1             # Pretty CLI logging
 # --- Optional Aggressive Mode Scripts ---
 psutil==5.9.8            # CPU/memory/net stat (for feedback)
 coloredlogs==15.0.1
+# --- GTK Desktop UI ---
+PyGObject==3.46.0

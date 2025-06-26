@@ -129,6 +129,12 @@ ZEUSNET_MODE=SAFE
 > **SAFE Mode** disables any packet injection or spoofing.
 > **AGGRESSIVE Mode** activates deauth, rogue AP, and swarm tactics (for legal use only).
 
+### Environment Variables
+
+| Variable      | Purpose                                | Default |
+|---------------|----------------------------------------|---------|
+| `RETRY_LIMIT` | Serial read errors before reconnecting | `3`     |
+
 ## 🛰️ TL-WN722N Tools
 
 | Tool                | Role                         |

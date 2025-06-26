@@ -45,10 +45,6 @@ class NetworkWindow(Gtk.ApplicationWindow):
         self.loop = asyncio.new_event_loop()
         threading.Thread(target=self.loop.run_forever, daemon=True).start()
 
-        # Dedicated asyncio loop in a background thread
-        self.loop = asyncio.new_event_loop()
-        threading.Thread(target=self.loop.run_forever, daemon=True).start()
-
         GLib.timeout_add_seconds(5, self.refresh)
 
         # First fetch on load
@@ -93,23 +89,6 @@ class NetworkWindow(Gtk.ApplicationWindow):
     def update_status(self, text: str):
         """Update status label safely from any thread."""
         self.status_label.set_text(text)
-        return False
-
-    def update_store(self, data):
-        """Update Gtk.ListStore from a background thread."""
-        self.liststore.clear()
-        for item in data:
-            timestamp = item.get("timestamp", "")
-            if isinstance(timestamp, str):
-                timestamp = timestamp.replace("T", " ").split(".")[0]
-            self.liststore.append([
-                item.get("ssid", "Unknown"),
-                item.get("bssid", "N/A"),
-                item.get("channel", 0),
-                item.get("rssi", 0),
-                item.get("auth", ""),
-                timestamp,
-            ])
         return False
 
     def refresh(self):

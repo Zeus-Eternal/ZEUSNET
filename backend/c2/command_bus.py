@@ -15,6 +15,11 @@ except ImportError:
     pyudev = None
 
 import paho.mqtt.client as mqtt
+from backend.db import SessionLocal
+from backend.models import WiFiScan
+
+# ESP32 -> PC opcodes
+OPCODE_SCAN_RESULT = 0x10
 
 from backend.settings import (
     SERIAL_PORT,
@@ -236,8 +241,33 @@ class MQTTCommandRelay:
             logger.error(f"[MQTT] Connection failed: {e}")
 
 
+def store_scan_to_db(data: dict) -> None:
+    """Persist incoming scan results to the database."""
+    if data.get("opcode") != OPCODE_SCAN_RESULT:
+        return
+    payload = data.get("payload", {})
+    session = SessionLocal()
+    try:
+        scan = WiFiScan(
+            ssid=payload.get("ssid"),
+            bssid=payload.get("bssid"),
+            rssi=payload.get("rssi"),
+            auth=payload.get("auth"),
+            channel=payload.get("channel"),
+        )
+        session.add(scan)
+        session.commit()
+        logger.debug(f"[DB] Stored scan: {scan.ssid} {scan.bssid}")
+    except Exception as e:
+        logger.warning(f"[DB] Failed to store scan: {e}")
+        session.rollback()
+    finally:
+        session.close()
+
+
 # Entrypoint for use
 command_bus = SerialCommandBus(error_limit=RETRY_LIMIT)
+command_bus.register_listener(store_scan_to_db)
 mqtt_relay = MQTTCommandRelay(command_bus)
 
 

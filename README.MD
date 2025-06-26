@@ -17,6 +17,7 @@
 | 🔥 Deauth & AP cloning       | Enabled via TL‑WN722N NIC in aggressive mode     |
 | 🧪 TL‑WN722N automation      | Controlled packet injection, handshake captures  |
 | 🗺️ Heatmap dashboard         | Leaflet-powered SSID and RSSI visualization      |
+| 🎛️ In-app pentest controls  | Toggle mode and launch attacks via UI |
 
 ## 🧠 Architecture
 
@@ -71,9 +72,11 @@ python gtk_app/main.py
 This requires the `PyGObject` package built with GTK **4**.
 The window now displays SSID, BSSID, channel, authentication mode,
 RSSI and timestamp, refreshing every few seconds. A small control bar
-lets you change the ESP32 scan interval, toggle scanning on/off and
-trigger a remote reboot. A status bar indicates the last successful
-update or any errors.
+lets you change the ESP32 scan interval, toggle scanning on/off, switch
+between SAFE and AGGRESSIVE modes or update the serial port. An attack
+panel can trigger TL‑WN722N operations such as deauth or rogue‑AP
+deployment. A status bar indicates the last successful update or any
+errors.
 
 ### Auto Start with systemd (Linux)
 
@@ -136,6 +139,9 @@ ZEUSNET_MODE=SAFE
 | Variable      | Purpose                                | Default |
 |---------------|----------------------------------------|---------|
 | `RETRY_LIMIT` | Serial read errors before reconnecting | `3`     |
+
+Call `GET /api/settings` to view current mode and serial configuration. Use
+`POST /api/settings` with `{"mode": "AGGRESSIVE"}` to switch modes at runtime.
 
 ## 🛰️ TL-WN722N Tools
 

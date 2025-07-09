@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from backend.routes import aireplay
 
 # 🔧 Load environment variables (e.g., ZEUSNET_MODE)
 load_dotenv()
@@ -68,6 +69,7 @@ app.include_router(settings_api.router, prefix="/api")
 app.include_router(nic.router, prefix="/api")
 app.include_router(diagnostic.router, prefix="/api")
 app.include_router(covert_ops_agent.router, prefix="/api")
+app.include_router(aireplay.router, prefix="/api")
 
 # 🛠 New settings and NIC routes (mode toggling, watchdog, serial config)
 app.include_router(settings_route.router)

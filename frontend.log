@@ -1,6 +1,2 @@
-2025-07-09 17:11:16,531 - frontend.views.settings_view - ERROR - Port update failed: HTTP 404: {"detail":"Not Found"}
-2025-07-09 17:11:17,407 - frontend.views.settings_view - ERROR - Port update failed: HTTP 404: {"detail":"Not Found"}
-2025-07-09 17:11:25,930 - frontend.views.network_view - INFO - Target selected: {'id': 37098, 'ssid': 'tldff058', 'rssi': -68}
-2025-07-09 17:12:13,415 - frontend.views.settings_view - ERROR - Mode switch failed: HTTP 404: {"detail":"Not Found"}
-2025-07-09 17:12:18,069 - frontend.views.settings_view - ERROR - Watchdog update failed: HTTP 404: {"detail":"Not Found"}
-2025-07-09 17:23:59,783 - frontend.views.network_view - INFO - Target selected: {'id': 37087, 'ssid': 'Nevaeh', 'rssi': -87}
+2025-07-09 18:42:29,945 - frontend.views.network_view - INFO - Target selected: {'id': 39249, 'ssid': 'tldff058', 'rssi': -61}
+2025-07-09 18:42:45,095 - frontend.views.network_view - INFO - Target selected: {'id': 39249, 'ssid': 'tldff058', 'rssi': -61}

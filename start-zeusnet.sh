@@ -11,7 +11,7 @@ if [ -d .venv ]; then
 fi
 
 # Kill any process on port 8000 (optional evil step)
-fuser -k 8000/tcp || true
+# fuser -k 8000/tcp || true
 
 # Start backend (Uvicorn) in background, log to file
 uvicorn backend.main:app --host 0.0.0.0 --port 8000 --workers 2 > backend.log 2>&1 &

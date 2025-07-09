@@ -103,3 +103,38 @@ class NetworkAPIClient:
             except Exception as exc:
                 GLib.idle_add(on_error, exc)
         threading.Thread(target=_task, daemon=True).start()
+
+
+# === NIC / Attack CLIENT ===
+
+class AttackAPIClient:
+    """Client for NIC attack operations."""
+
+    def __init__(self, base_url: str = "http://localhost:8000/api"):
+        self.base_url = base_url.rstrip("/")
+
+    def launch_attack(
+        self, mode: str, target: str | None = None, channel: int | None = None
+    ) -> Dict[str, Any]:
+        payload = {"mode": mode, "target": target, "channel": channel}
+        resp = requests.post(f"{self.base_url}/nic/attack", json=payload, timeout=6)
+        if resp.status_code != 200:
+            raise APIError(f"HTTP {resp.status_code}: {resp.text}")
+        return resp.json()
+
+    def launch_attack_async(
+        self,
+        mode: str,
+        target: str | None,
+        channel: int | None,
+        on_success: Callable[[Dict[str, Any]], None],
+        on_error: Callable[[Exception], None],
+    ):
+        def _task():
+            try:
+                data = self.launch_attack(mode, target, channel)
+                GLib.idle_add(on_success, data)
+            except Exception as exc:
+                GLib.idle_add(on_error, exc)
+
+        threading.Thread(target=_task, daemon=True).start()

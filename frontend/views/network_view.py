@@ -11,7 +11,7 @@ from gi.repository import Gtk, GLib
 
 try:
     from ..widgets.network_list import NetworkList
-    from ..services.api_client import NetworkAPIClient
+    from backend.services.api_client import NetworkAPIClient
 except ImportError:
     import os, sys
     CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -20,7 +20,7 @@ except ImportError:
     if GRANDPARENT_DIR not in sys.path:
         sys.path.insert(0, GRANDPARENT_DIR)
     from frontend.widgets.network_list import NetworkList
-    from frontend.services.api_client import NetworkAPIClient
+    from backend.services.api_client import NetworkAPIClient
 
 logger = logging.getLogger(__name__)
 

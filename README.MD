@@ -87,6 +87,8 @@ The window now shows a network table with filters, attack panel, a
 dashboard graph of top RSSI values and a heatmap tab. Controls let you
 change scan interval, toggle scanning, switch modes or select the serial
 port. A status bar reports the last successful update or any errors.
+The attack tab now includes a dropdown for selecting the type of attack
+before launching.
 
 ### Auto Start with systemd (Linux)
 

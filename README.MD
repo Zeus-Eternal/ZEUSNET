@@ -40,7 +40,7 @@ ESP32 (Spectral Scanner / Captive Portal)
 cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-uvicorn main:app --reload
+ZEUSNET_ENV=dev uvicorn main:app --reload
 # Tables are created automatically on first run
 ```
 
@@ -63,11 +63,14 @@ npm run dev
 To avoid installing Mosquitto manually, run it via Docker:
 
 ```bash
-docker compose up -d mqtt
+docker compose up -d backend mqtt
 ```
 
-Then launch everything with `start-zeusnet.sh` (or `.bat` on Windows). See
-`docs/setup.md` for full setup instructions.
+This spins up the FastAPI backend in a lightweight container along with
+Mosquitto. See `docs/setup.md` for full setup instructions.
+
+To run the stack locally without Docker Compose, set `ZEUSNET_ENV=dev` and
+execute `start-zeusnet.sh` (or `.bat` on Windows).
 
 ### GTK Desktop UI
 
@@ -96,7 +99,9 @@ sudo systemctl enable zeusnet-serial
 sudo systemctl start zeusnet-serial
 ```
 
-The service uses a cached serial port stored under `~/.config/zeusnet/last_serial`.
+The service assumes ZeusNet is installed under `/opt/zeusnet` and reads
+environment variables from `/opt/zeusnet/.env`. It caches the last detected
+serial port under `~/.config/zeusnet/last_serial`.
 ### Flash ESP32
 
 ```bash

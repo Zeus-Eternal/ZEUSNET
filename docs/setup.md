@@ -12,14 +12,19 @@ cd zeusnet
 python -m venv .venv
 source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 pip install -r backend/requirements.txt
-docker compose up -d mqtt
+docker compose up -d backend mqtt
 ```
 
 ### 🚀 Launch
 
+If you are using Docker Compose, the backend starts automatically on port
+`8000` when you ran `docker compose up`. You can also launch everything
+manually:
+
 ```bash
 bash start-zeusnet.sh  # or start-zeusnet.bat on Windows
 ```
+Set `ZEUSNET_ENV=dev` before running the script to enable hot reloads.
 
 ### 📺 GTK Desktop Viewer
 
@@ -54,3 +59,6 @@ sudo systemctl daemon-reload
 sudo systemctl enable zeusnet-serial
 sudo systemctl start zeusnet-serial
 ```
+
+This unit file expects ZeusNet under `/opt/zeusnet` with a Python virtual
+environment at `.venv` and an optional `.env` file in the same directory.

@@ -4,8 +4,9 @@ After=network.target
 
 [Service]
 User=zeus
-WorkingDirectory=/media/zeus/Development/GitHub/ZEUSNET
-ExecStart=/media/zeus/Development/GitHub/ZEUSNET/.venv/bin/python backend/c2/command_bus.py
+WorkingDirectory=/opt/zeusnet
+EnvironmentFile=/opt/zeusnet/.env
+ExecStart=/opt/zeusnet/.venv/bin/python backend/c2/command_bus.py
 Restart=always
 RestartSec=3
 

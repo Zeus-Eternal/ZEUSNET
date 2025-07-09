@@ -6,3 +6,9 @@ services:
       - "1883:1883"
     volumes:
       - ./docker/mosquitto.conf:/mosquitto/config/mosquitto.conf
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mqtt

@@ -202,6 +202,29 @@ Additional modes such as `survey` and `jam` provide blue‑team defensive action
 
 Creates daily backup in `/backups/net_scan_YYYYMMDD.csv.gz`
 
+## 🏭 Production Deployment
+
+For stable, long-running operation install dependencies and launch Uvicorn
+without autoreload:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+docker compose up -d mqtt
+uvicorn backend.main:app --host 0.0.0.0 --port 8000 --workers 2
+```
+
+The included systemd unit can be adjusted to your installation directory
+(default `/opt/zeusnet`):
+
+```bash
+sudo cp systemd/zeusnet-serial.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable zeusnet-serial
+sudo systemctl start zeusnet-serial
+```
+
 ## 🧙 AI Model (Optional)
 
 Phase 2+ enables LSTM anomaly detection on RSSI trends.

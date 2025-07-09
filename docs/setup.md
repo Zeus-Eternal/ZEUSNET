@@ -59,6 +59,5 @@ sudo systemctl daemon-reload
 sudo systemctl enable zeusnet-serial
 sudo systemctl start zeusnet-serial
 ```
-
 This unit file expects ZeusNet under `/opt/zeusnet` with a Python virtual
 environment at `.venv` and an optional `.env` file in the same directory.

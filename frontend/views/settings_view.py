@@ -15,20 +15,17 @@ try:
 except ImportError:  # pragma: no cover - direct execution fallback
     import os
     import sys
-
     CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
     PARENT_DIR = os.path.dirname(CURRENT_DIR)
     GRANDPARENT_DIR = os.path.dirname(PARENT_DIR)
     if GRANDPARENT_DIR not in sys.path:
         sys.path.insert(0, GRANDPARENT_DIR)
-
     from frontend.services.api_client import SettingsAPIClient
 
 logger = logging.getLogger(__name__)
 
-
 class SettingsView(Gtk.Box):
-    """Settings tab for controlling mode, serial port and watchdog."""
+    """Settings tab for controlling mode, serial port, and watchdog."""
 
     def __init__(self) -> None:
         super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=12)
@@ -39,13 +36,16 @@ class SettingsView(Gtk.Box):
         self.set_margin_start(12)
         self.set_margin_end(12)
 
+        self.status_label = Gtk.Label(label="Ready")
+        self.status_label.set_halign(Gtk.Align.START)
+
         self._build_ui()
         GLib.idle_add(self._load_settings)
 
     def _build_ui(self) -> None:
         """Construct UI controls."""
 
-        # Mode toggle
+        # --- Mode toggle ---
         mode_box = Gtk.Box(spacing=6)
         self.mode_label = Gtk.Label(label="Mode: Unknown")
         self.mode_btn = Gtk.Button(label="Toggle Mode")
@@ -53,7 +53,7 @@ class SettingsView(Gtk.Box):
         mode_box.append(self.mode_label)
         mode_box.append(self.mode_btn)
 
-        # Serial port selector
+        # --- Serial port selector ---
         port_box = Gtk.Box(spacing=6)
         self.port_combo = Gtk.ComboBoxText()
         self.port_combo.connect("changed", self.on_port_selected)
@@ -61,18 +61,14 @@ class SettingsView(Gtk.Box):
         port_box.append(Gtk.Label(label="Serial Port:"))
         port_box.append(self.port_combo)
 
-        # Aggressive watchdog toggle
+        # --- Aggressive watchdog toggle ---
         watchdog_box = Gtk.Box(spacing=6)
         self.watchdog_switch = Gtk.Switch()
         self.watchdog_switch.connect("notify::active", self.on_watchdog_toggled)
         watchdog_box.append(Gtk.Label(label="Aggressive Watchdog:"))
         watchdog_box.append(self.watchdog_switch)
 
-        # Status label
-        self.status_label = Gtk.Label(label="Ready")
-        self.status_label.set_halign(Gtk.Align.START)
-
-        # Assemble
+        # --- Assemble ---
         self.append(mode_box)
         self.append(port_box)
         self.append(watchdog_box)

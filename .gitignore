@@ -16,3 +16,4 @@ frontend/dist/
 # compress esp32-ZeusNet driver
 esp32-ZeusNet.zip
 webui/dist/
+zeusnet.db-journal

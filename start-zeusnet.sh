@@ -7,7 +7,11 @@ cd backend
 if [ -d ../.venv ]; then
     source ../.venv/bin/activate
 fi
-uvicorn main:app --host 0.0.0.0 --port 8000 --workers 2 &
+if [ "$ZEUSNET_ENV" = "dev" ]; then
+    uvicorn main:app --reload &
+else
+    uvicorn main:app --host 0.0.0.0 --port 8000 &
+fi
 cd ..
 
 echo "Starting MQTT broker..."

@@ -11,7 +11,7 @@ gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk, GLib
 
 try:
-    from ..services.api_client import SettingsAPIClient
+    from backend.services.api_client import SettingsAPIClient
 except ImportError:  # pragma: no cover - direct execution fallback
     import os
     import sys
@@ -20,7 +20,7 @@ except ImportError:  # pragma: no cover - direct execution fallback
     GRANDPARENT_DIR = os.path.dirname(PARENT_DIR)
     if GRANDPARENT_DIR not in sys.path:
         sys.path.insert(0, GRANDPARENT_DIR)
-    from frontend.services.api_client import SettingsAPIClient
+    from backend.services.api_client import SettingsAPIClient
 
 logger = logging.getLogger(__name__)
 

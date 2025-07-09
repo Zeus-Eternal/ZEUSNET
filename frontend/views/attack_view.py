@@ -6,6 +6,17 @@ import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk, GObject
 
+try:
+    from backend.services.api_client import AttackAPIClient
+except ImportError:
+    import os, sys
+    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+    PARENT_DIR = os.path.dirname(CURRENT_DIR)
+    GRANDPARENT_DIR = os.path.dirname(PARENT_DIR)
+    if GRANDPARENT_DIR not in sys.path:
+        sys.path.insert(0, GRANDPARENT_DIR)
+    from backend.services.api_client import AttackAPIClient
+
 class AttackView(Gtk.Box):
     """
     Full-featured Attack controls tab. Accepts prefill via prefill_target(net_info).
@@ -18,12 +29,32 @@ class AttackView(Gtk.Box):
         self.set_margin_start(16)
         self.set_margin_end(16)
 
+        self.api_client = AttackAPIClient()
+
         self._build_ui()
 
     def _build_ui(self):
         """Build all attack controls with labeled, editable fields."""
 
         form = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+
+        # Attack type selection
+        attack_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        attack_label = Gtk.Label(label="Attack Type:", xalign=0)
+        self.attack_combo = Gtk.ComboBoxText()
+        for mode in [
+            "deauth",
+            "rogue_ap",
+            "pmkid",
+            "swarm",
+            "survey",
+            "jam",
+        ]:
+            self.attack_combo.append_text(mode)
+        self.attack_combo.set_active(0)
+        attack_row.append(attack_label)
+        attack_row.append(self.attack_combo)
+        form.append(attack_row)
 
         # SSID
         ssid_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
@@ -99,15 +130,28 @@ class AttackView(Gtk.Box):
         self.status_label.set_text("Target loaded. Ready to launch your diabolical plan.")
 
     def on_attack_clicked(self, _btn):
-        """Evil placeholder for actual attack logic."""
-        ssid = self.ssid_entry.get_text()
-        bssid = self.bssid_entry.get_text()
+        """Launch selected attack via backend API."""
+        mode = self.attack_combo.get_active_text()
+        bssid = self.bssid_entry.get_text() or None
         channel = self.channel_entry.get_text()
-        enc = self.enc_entry.get_text()
-        quality = self.quality_entry.get_text()
-        rssi = self.rssi_entry.get_text()
-        # TODO: Integrate actual backend attack logic here
-        self.status_label.set_text(
-            f"Attack launched on SSID '{ssid}' (BSSID: {bssid}, Channel: {channel}, Encryption: {enc}, Quality: {quality}, RSSI: {rssi})"
+        channel_val = int(channel) if channel.isdigit() else None
+
+        self.status_label.set_text("Launching attack...")
+
+        def _on_success(data):
+            pid = data.get("pid")
+            self.status_label.set_text(
+                f"{mode} attack started (pid {pid})" if pid else "Attack started"
+            )
+
+        def _on_error(err):
+            self.status_label.set_text(f"Attack failed: {err}")
+
+        self.api_client.launch_attack_async(
+            mode=mode,
+            target=bssid,
+            channel=channel_val,
+            on_success=_on_success,
+            on_error=_on_error,
         )
 

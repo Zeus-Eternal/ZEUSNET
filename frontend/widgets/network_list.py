@@ -3,7 +3,7 @@ gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk, GObject, Gdk
 
 try:
-    from ..services.api_client import NetworkAPIClient
+    from backend.services.api_client import NetworkAPIClient
 except ImportError:
     import os, sys
     CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -11,7 +11,7 @@ except ImportError:
     GRANDPARENT_DIR = os.path.dirname(PARENT_DIR)
     if GRANDPARENT_DIR not in sys.path:
         sys.path.insert(0, GRANDPARENT_DIR)
-    from frontend.services.api_client import NetworkAPIClient
+    from backend.services.api_client import NetworkAPIClient
 
 class NetworkList(Gtk.ScrolledWindow):
     __gsignals__ = {

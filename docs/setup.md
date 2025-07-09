@@ -54,3 +54,16 @@ sudo systemctl daemon-reload
 sudo systemctl enable zeusnet-serial
 sudo systemctl start zeusnet-serial
 ```
+
+### Production Deployment
+
+Run the backend without autoreload and adjust the unit file path to your
+installation directory (default `/opt/zeusnet`):
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
+docker compose up -d mqtt
+uvicorn backend.main:app --host 0.0.0.0 --port 8000 --workers 2
+```

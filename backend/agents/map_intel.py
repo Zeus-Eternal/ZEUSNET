@@ -1,9 +1,13 @@
 """MapIntelligence agent.
 
-This experimental module will eventually generate map overlays from
-processed signal events. It currently exists as a placeholder and is not
-used in production.
+Generates map overlays from processed signal events and exposes a minimal
+GeoJSON feature collector for the UI heat-map.
 """
+
+import logging
+
+
+logger = logging.getLogger("zeusnet.map_intel")
 
 
 from collections import deque
@@ -15,7 +19,6 @@ class MapIntelligence:
     def __init__(self, history_size: int = 100) -> None:
         self.history_size = history_size
         self._recent: Deque[dict] = deque(maxlen=history_size)
-
     def process_event(self, data: dict) -> dict:
         """Translate a signal event into a GeoJSON Feature.
 

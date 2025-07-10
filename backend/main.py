@@ -2,9 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-# 🧠 Load env vars (e.g., ZEUSNET_MODE)
-load_dotenv()
-
 # 🧠 Real ZeusNet routers
 from backend.api import (
     scan,
@@ -25,6 +22,9 @@ from backend.routes import nic as route_nic
 
 from backend.c2.command_bus import start_bus
 from backend.db import init_db
+
+# 🧠 Load env vars (e.g., ZEUSNET_MODE)
+load_dotenv()
 
 # 🚀 FastAPI app
 app = FastAPI(

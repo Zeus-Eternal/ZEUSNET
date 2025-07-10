@@ -4,11 +4,10 @@
 
 import gi
 import logging
-from typing import Optional
 from serial.tools import list_ports
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk, GLib  # noqa: E402
 
 try:
     from backend.services.api_client import SettingsAPIClient

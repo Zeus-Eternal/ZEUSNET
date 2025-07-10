@@ -7,13 +7,14 @@ import logging
 from typing import Dict
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk, GLib  # noqa: E402
 
 try:
     from ..widgets.network_list import NetworkList
     from backend.services.api_client import NetworkAPIClient
 except ImportError:
-    import os, sys
+    import os
+    import sys
     CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
     PARENT_DIR = os.path.dirname(CURRENT_DIR)
     GRANDPARENT_DIR = os.path.dirname(PARENT_DIR)

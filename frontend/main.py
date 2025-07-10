@@ -6,7 +6,7 @@ import sys
 import gi
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, Gdk  # Gdk needed for CSS
+from gi.repository import Gtk, Gdk  # noqa: E402  # Gdk needed for CSS
 
 # --- CSS LOADER: Load custom style before any windows ---
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))

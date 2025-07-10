@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import sys
-import time
 import random
 import argparse
 from scapy.all import IP, TCP, send

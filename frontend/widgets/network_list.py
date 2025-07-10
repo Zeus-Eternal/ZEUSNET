@@ -1,13 +1,7 @@
 import gi
+
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, GObject, Gdk
-
-if __package__ is None:
-    import os, sys
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-
-from frontend.utils.path_setup import ensure_repo_root_on_path
-ensure_repo_root_on_path()
+from gi.repository import Gtk, GObject 
 
 from backend.services.api_client import NetworkAPIClient
 
@@ -72,12 +66,15 @@ class NetworkList(Gtk.ScrolledWindow):
 
     def load_networks(self, filters: dict) -> None:
         self.set_loading_state(True)
+
         def _on_success(networks):
             self.set_loading_state(False)
             self.load_data(networks)
+
         def _on_error(err):
             self.set_loading_state(False)
             self.table_box.append(Gtk.Label(label=f"Failed to load networks: {err}"))
+
         self.api_client.get_networks_async(filters, _on_success, _on_error)
 
     def load_data(self, networks):
@@ -87,13 +84,15 @@ class NetworkList(Gtk.ScrolledWindow):
             return
 
         try:
-            networks = sorted(networks, key=lambda n: int(n.get("rssi", -999)), reverse=True)
+            networks = sorted(
+                networks, key=lambda n: int(n.get("rssi", -999)), reverse=True
+            )
         except Exception:
             pass
 
         seen = set()
         for n in networks:
-            key = (n.get('ssid'), n.get('bssid'), n.get('channel'))
+            key = (n.get("ssid"), n.get("bssid"), n.get("channel"))
             if key in seen:
                 continue
             seen.add(key)
@@ -109,7 +108,7 @@ class NetworkList(Gtk.ScrolledWindow):
                 Gtk.Label(label=f"{n.get('bssid','—')}", xalign=0),
                 Gtk.Label(label=f"{n.get('channel','—')}", xalign=0),
                 Gtk.Label(label=f"{n.get('encryption','—')}", xalign=0),
-                Gtk.Label(label=f"{n.get('quality','—')}", xalign=0)
+                Gtk.Label(label=f"{n.get('quality','—')}", xalign=0),
             ]
             for idx, widget in enumerate(widgets):
                 widget.set_margin_start(12)

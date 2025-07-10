@@ -1,20 +1,14 @@
 """GTK application setup for ZeusNet."""
 
 import gi
+
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk
+from gi.repository import Gtk  # noqa: E402
 
-if __package__ is None:
-    import os, sys
-    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-
-from frontend.utils.path_setup import ensure_repo_root_on_path
-ensure_repo_root_on_path()
-
-from frontend.views.network_view import NetworkView
-from frontend.views.attack_view import AttackView
-from frontend.views.settings_view import SettingsView
-from frontend.views.dashboard_view import DashboardView
+from .views.network_view import NetworkView
+from .views.attack_view import AttackView
+from .views.settings_view import SettingsView
+from .views.dashboard_view import DashboardView
 
 class ZeusApp(Gtk.Application):
     """Main GTK application class."""
@@ -27,6 +21,7 @@ class ZeusApp(Gtk.Application):
         if not hasattr(self, "window") or self.window is None:
             self.window = ZeusAppWindow(application=self)
         self.window.present()
+
 
 class ZeusAppWindow(Gtk.ApplicationWindow):
     """Main Application Window with tab control and attack glue."""

@@ -3,10 +3,11 @@
 
 import os
 import sys
+import logging
 import gi
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, Gdk  # Gdk needed for CSS
+from gi.repository import Gtk, Gdk  # noqa: E402  # Gdk needed for CSS
 
 # Allow running as "python frontend/main.py" by adding repo root
 if __package__ is None:
@@ -28,16 +29,19 @@ if os.path.exists(CSS_PATH):
         Gtk.STYLE_PROVIDER_PRIORITY_USER,
     )
 
+
 def main() -> int:
     from frontend.app import ZeusApp
     from frontend.utils.logging import configure_logging
-
-    print("Launching ZeusNet GTK Frontend...")
+    
     configure_logging()
+    logger = logging.getLogger(__name__)
+    logger.info("Launching ZeusNet GTK Frontend...")
     app = ZeusApp()
     rc = app.run()
-    print("ZeusNet exited with code:", rc)
+    logger.info("ZeusNet exited with code: %s", rc)
     return rc
+
 
 if __name__ == "__main__":
     sys.exit(main())

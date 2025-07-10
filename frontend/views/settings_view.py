@@ -4,22 +4,15 @@
 
 import gi
 import logging
-from typing import Optional
 from serial.tools import list_ports
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, GLib
-
-if __package__ is None:
-    import os, sys
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-
-from frontend.utils.path_setup import ensure_repo_root_on_path
-ensure_repo_root_on_path()
+from gi.repository import Gtk, GLib 
 
 from backend.services.api_client import SettingsAPIClient
 
 logger = logging.getLogger(__name__)
+
 
 class SettingsView(Gtk.Box):
     """Settings tab for controlling mode, serial port, and watchdog."""

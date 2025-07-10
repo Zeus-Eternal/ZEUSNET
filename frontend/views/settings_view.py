@@ -4,25 +4,15 @@
 
 import gi
 import logging
-from typing import Optional
 from serial.tools import list_ports
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk, GLib 
 
-try:
-    from backend.services.api_client import SettingsAPIClient
-except ImportError:  # pragma: no cover - direct execution fallback
-    import os
-    import sys
-    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-    PARENT_DIR = os.path.dirname(CURRENT_DIR)
-    GRANDPARENT_DIR = os.path.dirname(PARENT_DIR)
-    if GRANDPARENT_DIR not in sys.path:
-        sys.path.insert(0, GRANDPARENT_DIR)
-    from backend.services.api_client import SettingsAPIClient
+from backend.services.api_client import SettingsAPIClient
 
 logger = logging.getLogger(__name__)
+
 
 class SettingsView(Gtk.Box):
     """Settings tab for controlling mode, serial port, and watchdog."""

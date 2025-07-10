@@ -29,17 +29,19 @@ Set `ZEUSNET_ENV=dev` before running the script to enable hot reloads.
 ### 📺 GTK Desktop Viewer
 
 Launch the desktop UI with tabs for network lists, signal charts,
-map view and attack controls:
+an experimental map view and attack controls:
 
 ```bash
-python frontend/main.py
+python -m frontend.main
 ```
 
-Requires the `PyGObject` package with GTK **4** support.
-If you encounter an error about `Gtk.ApplicationFlags` when launching the
-UI, ensure you are not using leftover GTK 3 snippets; the new code relies
+Running via ``-m`` ensures the repository root is on ``sys.path`` so no manual
+path tweaking is required. Requires the `PyGObject` package with GTK **4**
+support. If you encounter an error about `Gtk.ApplicationFlags` when launching
+the UI, ensure you are not using leftover GTK 3 snippets; the new code relies
 solely on GTK 4 APIs. The `Application.run()` method also no longer takes a
-`None` parameter in GTK 4.
+`None` parameter in GTK 4. The map view will remain blank until the
+MapIntelligence agent is available.
 
 ### 🌐 Web UI (React)
 

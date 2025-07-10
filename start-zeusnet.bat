@@ -13,5 +13,5 @@ cd ..
 
 docker compose up -d mqtt
 
-python frontend/main.py
+python -m frontend.main
 

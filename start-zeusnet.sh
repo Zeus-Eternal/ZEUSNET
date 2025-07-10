@@ -21,7 +21,7 @@ echo "Starting MQTT broker..."
 docker compose up -d mqtt
 
 echo "Starting ZeusNet Frontend..."
-python3 frontend/main.py > frontend.log 2>&1 &
+python3 -m frontend.main > frontend.log 2>&1 &
 FRONTEND_PID=$!
 
 # Graceful shutdown trap (optional)

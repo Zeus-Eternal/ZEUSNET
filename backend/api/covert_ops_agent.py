@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from backend import settings
 
-ZEUSNET_MODE = os.getenv("ZEUSNET_MODE", settings.ZEUSNET_MODE).upper()
+# RETRY_LIMIT is kept as a cached constant because it rarely changes
 RETRY_LIMIT = int(os.getenv("RETRY_LIMIT", settings.RETRY_LIMIT))
 
 router = APIRouter()
@@ -22,7 +22,9 @@ class AttackRequest(BaseModel):
 def safe_only_guard() -> None:
     """Block aggressive actions if running in SAFE mode."""
 
-    if ZEUSNET_MODE == "SAFE":
+    # Read the current mode from settings to respect runtime updates via
+    # /api/settings. Using settings directly avoids stale cached values.
+    if settings.ZEUSNET_MODE.upper() == "SAFE":
         raise HTTPException(status_code=403, detail="Operation disabled in SAFE mode.")
 
 

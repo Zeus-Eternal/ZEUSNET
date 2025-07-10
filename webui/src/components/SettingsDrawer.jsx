@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import { useSettings } from "../utils/SettingsContext";
 
 export default function SettingsDrawer({ open, onClose }) {
+  const { settings, setMode } = useSettings();
   const [iface, setIface] = useState("wlan0");
-  const [mode, setMode] = useState("SAFE");
   const [retries, setRetries] = useState(3);
 
   if (!open) return null;
@@ -13,7 +14,7 @@ export default function SettingsDrawer({ open, onClose }) {
       <label>Network Interface</label>
       <input value={iface} onChange={(e) => setIface(e.target.value)} />
       <label>Mode</label>
-      <select value={mode} onChange={(e) => setMode(e.target.value)}>
+      <select value={settings.mode} onChange={(e) => setMode(e.target.value)}>
         <option value="SAFE">SAFE</option>
         <option value="AGGRESSIVE">AGGRESSIVE</option>
       </select>

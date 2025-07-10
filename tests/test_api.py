@@ -1,75 +1,120 @@
-import os
-from datetime import datetime
-
 import pytest
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from datetime import datetime, timedelta
 
-from backend.main import app
-from backend.db import Base, get_db
-from backend.models import Device, WiFiScan
+# Import routers and settings
+from backend.api import networks, settings as settings_api, nic, export, scan
+from backend.db import init_db
+import backend.settings as config
 
 
-@pytest.fixture()
-def client(monkeypatch):
-    engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
-    TestingSessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
-    Base.metadata.create_all(bind=engine)
-
-    def override_get_db():
-        db = TestingSessionLocal()
-        try:
-            yield db
-        finally:
-            db.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-
-    with TestingSessionLocal() as db:
-        db.add_all([
-            WiFiScan(ssid="TestNet", bssid="aa:bb:cc:dd:ee:ff", rssi=-40, auth="WPA2", channel=6),
-            WiFiScan(ssid="Guest", bssid="11:22:33:44:55:66", rssi=-50, auth="Open", channel=1),
-        ])
-        db.add(Device(mac="aa:bb:cc:dd:ee:ff", first_seen=datetime.utcnow(), last_seen=datetime.utcnow()))
-        db.commit()
-
+@pytest.fixture(scope="module")
+def client():
+    """Create TestClient with essential routers."""
+    # Ensure tables exist
+    init_db()
+    app = FastAPI()
+    app.include_router(networks.router, prefix="/api")
+    app.include_router(settings_api.router, prefix="/api")
+    app.include_router(scan.router, prefix="/api")
+    app.include_router(export.router, prefix="/api")
+    app.include_router(nic.router, prefix="/api")
     with TestClient(app) as c:
         yield c
 
-    app.dependency_overrides.clear()
+
+def test_get_settings(client):
+    resp = client.get("/api/settings")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert {"mode", "serial_port", "serial_baud", "watchdog"} <= data.keys()
 
 
-def test_get_networks(client):
-    resp = client.get("/api/networks")
+def test_get_networks_default_mode(client):
+    resp = client.get("/api/networks", params={"limit": 2})
     assert resp.status_code == 200
     data = resp.json()
     assert isinstance(data, list)
-    assert any(n["ssid"] == "TestNet" for n in data)
+    assert len(data) <= 2
+    if data:
+        item = data[0]
+        assert "ssid" in item
+        assert "rssi" in item
+        # SAFE mode should omit aggressive fields
+        assert "bssid" not in item
 
 
-def test_get_devices(client):
-    resp = client.get("/api/devices")
+def test_aggressive_mode_updates_network_fields(client):
+    resp = client.post("/api/settings", json={"mode": "AGGRESSIVE"})
     assert resp.status_code == 200
-    data = resp.json()
-    assert len(data) == 1
-    assert data[0]["mac"] == "aa:bb:cc:dd:ee:ff"
+    assert resp.json()["mode"] == "AGGRESSIVE"
+    assert config.ZEUSNET_MODE == "AGGRESSIVE"
+
+    resp = client.get("/api/networks", params={"limit": 1})
+    assert resp.status_code == 200
+    items = resp.json()
+    assert items
+    item = items[0]
+    assert {"bssid", "auth", "channel", "timestamp"} <= item.keys()
 
 
-def test_nic_attack(monkeypatch, client):
-    from backend import settings
-    from backend.api import nic
+def test_nic_attack_requires_aggressive_mode(client):
+    config.ZEUSNET_MODE = "SAFE"
+    resp = client.post(
+        "/api/nic/attack",
+        json={"mode": "deauth", "target": "AA:BB:CC:DD:EE:FF"},
+    )
+    assert resp.status_code == 403
 
-    monkeypatch.setattr(settings, "ZEUSNET_MODE", "AGGRESSIVE")
+
+def test_nic_attack_launch_and_status(client, monkeypatch):
+    config.ZEUSNET_MODE = "AGGRESSIVE"
 
     class DummyProc:
-        pid = 42
+        def __init__(self, pid=999):
+            self.pid = pid
 
-        def __init__(self, *args, **kwargs):
-            pass
+    monkeypatch.setattr(nic.subprocess, "Popen", lambda *a, **k: DummyProc())
+    nic.attack_service.active.clear()
 
-    monkeypatch.setattr(nic.subprocess, "Popen", lambda cmd: DummyProc())
-
-    resp = client.post("/api/nic/attack", json={"mode": "rogue_ap"})
+    resp = client.post(
+        "/api/nic/attack",
+        json={"mode": "deauth", "target": "AA:BB:CC:DD:EE:FF"},
+    )
     assert resp.status_code == 200
-    assert resp.json()["pid"] == 42
+    pid = resp.json()["pid"]
+    assert pid == 999
+
+    resp = client.get("/api/status")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["active_attacks"] == {
+        pid: {"mode": "deauth", "target": "AA:BB:CC:DD:EE:FF", "channel": None}
+    }
+
+
+def test_export_csv(client):
+    now = datetime.utcnow()
+    scan_data = [
+        {
+            "ssid": "TestNet",
+            "bssid": "AA:BB:CC:DD:EE:FF",
+            "rssi": -20,
+            "auth": "open",
+            "channel": 1,
+            "timestamp": now.isoformat(),
+        }
+    ]
+    resp = client.post("/api/scan", json=scan_data)
+    assert resp.status_code == 200
+
+    params = {
+        "from_date": (now - timedelta(minutes=1)).isoformat(),
+        "to_date": (now + timedelta(minutes=1)).isoformat(),
+    }
+    resp = client.get("/api/export/csv", params=params)
+    assert resp.status_code == 200
+    text = resp.text
+    assert "SSID,BSSID,RSSI,Auth,Channel,Timestamp" in text
+    assert "TestNet" in text

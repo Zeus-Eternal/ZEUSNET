@@ -16,7 +16,7 @@
 | 📊 Export to CSV/Excel       | Export tables directly from the GTK UI             |
 | 🔥 Deauth & AP cloning       | Enabled via TL‑WN722N NIC in aggressive mode     |
 | 🧪 TL‑WN722N automation      | Controlled packet injection, handshake captures  |
-| 🗺️ Heatmap dashboard         | Leaflet-powered map view in GTK UI |
+| 🗺️ Heatmap dashboard         | Leaflet-powered map view in GTK UI *(coming soon)* |
 | 🎛️ In-app pentest controls  | Toggle mode and launch attacks via UI |
 | 📜 Advanced network list     | Filter scans by SSID or auth mode |
 | 📈 Signal charts             | Top RSSI graph in Dashboard tab |
@@ -83,10 +83,12 @@ python -m frontend.main
 
 This requires the `PyGObject` package built with GTK **4**.
 
-The window now shows a network table with filters, attack panel, a
-dashboard graph of top RSSI values and a heatmap tab. Controls let you
-change scan interval, toggle scanning, switch modes or select the serial
-port. A status bar reports the last successful update or any errors.
+The window now shows a network table with filters, attack panel and a
+dashboard graph of top RSSI values. A heatmap tab is present but will
+remain empty until the MapIntelligence agent is implemented. Controls let
+you change scan interval, toggle scanning, switch modes or select the
+serial port. A status bar reports the last successful update or any
+errors.
 The attack tab now includes a dropdown for selecting the type of attack
 before launching.
 
@@ -203,6 +205,16 @@ Additional modes such as `survey` and `jam` provide blue‑team defensive action
 ```
 
 Creates daily backup in `/backups/net_scan_YYYYMMDD.csv.gz`
+
+## 🗄️ Data Migration
+
+`zeusnet.db`, `backend.log` and `frontend.log` are no longer tracked in Git. To restore a previous database snapshot, extract it from an earlier commit:
+
+```bash
+git show <commit-hash>:zeusnet.db > zeusnet.db.old
+```
+
+Import or archive the file as needed before upgrading.
 
 ## 🏭 Production Deployment
 

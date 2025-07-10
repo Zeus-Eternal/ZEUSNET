@@ -3,8 +3,7 @@
 import gi
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk  # noqa: E402
-
+from gi.repository import Gtk 
 from .views.network_view import NetworkView
 from .views.attack_view import AttackView
 from .views.settings_view import SettingsView
@@ -34,6 +33,8 @@ class ZeusAppWindow(Gtk.ApplicationWindow):
         self.notebook = Gtk.Notebook()
         self.network_view = NetworkView(parent_controller=self)
         self.attack_view = AttackView()
+        self.packet_forge_view = PacketForgeView()
+        self.ai_assistant_view = AIAssistantView()
         self.settings_view = SettingsView()
         self.dashboard_view = DashboardView()
 
@@ -41,6 +42,8 @@ class ZeusAppWindow(Gtk.ApplicationWindow):
 
         self.notebook.append_page(self.network_view, Gtk.Label(label="Networks"))
         self.notebook.append_page(self.attack_view, Gtk.Label(label="Attack"))
+        self.notebook.append_page(self.packet_forge_view, Gtk.Label(label="Packet Forge"))
+        self.notebook.append_page(self.ai_assistant_view, Gtk.Label(label="AI Assistant"))
         self.notebook.append_page(self.settings_view, Gtk.Label(label="Settings"))
         self.notebook.append_page(self.dashboard_view, Gtk.Label(label="Dashboard"))
 

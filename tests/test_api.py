@@ -2,8 +2,6 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from datetime import datetime, timedelta
-
-# Import routers and settings
 from backend.api import networks, settings as settings_api, nic, export, scan
 from backend.db import init_db
 import backend.settings as config
@@ -57,8 +55,7 @@ def test_aggressive_mode_updates_network_fields(client):
     assert items
     item = items[0]
     assert {"bssid", "auth", "channel", "timestamp"} <= item.keys()
-
-
+    
 def test_nic_attack_requires_aggressive_mode(client):
     config.ZEUSNET_MODE = "SAFE"
     resp = client.post(

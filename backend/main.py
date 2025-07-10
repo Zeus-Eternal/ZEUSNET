@@ -20,6 +20,8 @@ from backend.api import (
     diagnostic,
     covert_ops_agent,
     aireplay,
+    forge,
+    assistant,
 )
 from backend.routes import networks as route_networks
 from backend.routes import settings as route_settings
@@ -59,6 +61,8 @@ def read_root():
         "command": "/api/command",
         "export_csv": "/api/export/csv",
         "mode": "/api/settings/mode",
+        "forge": "/api/forge/send",
+        "assistant": "/api/assistant/chat",
     }
 
 # API Routers (always /api prefix)
@@ -73,6 +77,8 @@ app.include_router(nic.router, prefix="/api")
 app.include_router(diagnostic.router, prefix="/api")
 app.include_router(covert_ops_agent.router, prefix="/api")
 app.include_router(aireplay.router, prefix="/api")
+app.include_router(forge.router, prefix="/api")
+app.include_router(assistant.router, prefix="/api")
 
 # Custom SQLAlchemy routes (for legacy/extra DB stuff)
 app.include_router(route_networks.router, prefix="/api")

@@ -138,3 +138,72 @@ class AttackAPIClient:
                 GLib.idle_add(on_error, exc)
 
         threading.Thread(target=_task, daemon=True).start()
+
+
+# === Packet Forge CLIENT ===
+
+class ForgeAPIClient:
+    """Client for custom packet crafting endpoints."""
+
+    def __init__(self, base_url: str = "http://localhost:8000/api"):
+        self.base_url = base_url.rstrip("/")
+
+    def send_packet(self, frame_type: str, payload: str) -> Dict[str, Any]:
+        resp = requests.post(
+            f"{self.base_url}/forge/send",
+            json={"frame_type": frame_type, "payload": payload},
+            timeout=6,
+        )
+        if resp.status_code != 200:
+            raise APIError(f"HTTP {resp.status_code}: {resp.text}")
+        return resp.json()
+
+    def send_packet_async(
+        self,
+        frame_type: str,
+        payload: str,
+        on_success: Callable[[Dict[str, Any]], None],
+        on_error: Callable[[Exception], None],
+    ) -> None:
+        def _task():
+            try:
+                data = self.send_packet(frame_type, payload)
+                GLib.idle_add(on_success, data)
+            except Exception as exc:
+                GLib.idle_add(on_error, exc)
+
+        threading.Thread(target=_task, daemon=True).start()
+
+
+# === AI Assistant CLIENT ===
+
+class AIAssistantAPIClient:
+    """Client for the simple AI assistant endpoint."""
+
+    def __init__(self, base_url: str = "http://localhost:8000/api"):
+        self.base_url = base_url.rstrip("/")
+
+    def ask(self, prompt: str) -> Dict[str, Any]:
+        resp = requests.post(
+            f"{self.base_url}/assistant/chat",
+            json={"prompt": prompt},
+            timeout=6,
+        )
+        if resp.status_code != 200:
+            raise APIError(f"HTTP {resp.status_code}: {resp.text}")
+        return resp.json()
+
+    def ask_async(
+        self,
+        prompt: str,
+        on_success: Callable[[Dict[str, Any]], None],
+        on_error: Callable[[Exception], None],
+    ) -> None:
+        def _task():
+            try:
+                data = self.ask(prompt)
+                GLib.idle_add(on_success, data)
+            except Exception as exc:
+                GLib.idle_add(on_error, exc)
+
+        threading.Thread(target=_task, daemon=True).start()

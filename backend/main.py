@@ -27,7 +27,7 @@ from backend.routes import networks as route_networks
 from backend.routes import settings as route_settings
 from backend.routes import nic as route_nic
 
-from backend.c2.command_bus import start_bus
+from backend.core.agent_manager import agent_manager
 from backend.db import init_db
 
 # 🧠 Load env vars (e.g., ZEUSNET_MODE)
@@ -91,4 +91,4 @@ def _startup():
     configure_logging()
     logger.info("Starting backend services")
     init_db()
-    start_bus()
+    agent_manager.start_all()

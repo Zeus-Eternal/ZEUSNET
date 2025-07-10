@@ -24,7 +24,7 @@ def test_get_settings(client):
     resp = client.get("/api/settings")
     assert resp.status_code == 200
     data = resp.json()
-    assert {"mode", "serial_port", "serial_baud"} <= data.keys()
+    assert {"mode", "serial_port", "serial_baud", "watchdog"} <= data.keys()
 
 
 def test_get_networks_default_mode(client):

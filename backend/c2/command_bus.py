@@ -18,7 +18,7 @@ from backend.db import SessionLocal
 from backend.models import WiFiScan
 
 from backend.settings import (
-    SERIAL_PORT,
+    get_serial_port,
     SERIAL_BAUD,
     MQTT_BROKER,
     MQTT_TOPIC,
@@ -104,7 +104,7 @@ class SerialCommandBus:
             self._save_last_known_port(ports[0])
             return ports[0]
 
-        return SERIAL_PORT
+        return get_serial_port()
 
     def _udev_callback(self, action, device):
         logger.info(f"[udev] {action} detected: {device.device_node}")

@@ -1,0 +1,20 @@
+.heading {
+    font-weight: bold;
+    font-size: 1.05em;
+    color: #222;
+    background: #f4f4f7;
+}
+.zebra {
+    background: #f8fafd;
+}
+.hover {
+    background: #e2e8f0;
+}
+.monospace {
+    font-family: monospace;
+    letter-spacing: 0.04em;
+}
+.strong-signal {
+    color: #0d9100;
+    font-weight: bold;
+}

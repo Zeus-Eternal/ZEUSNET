@@ -1,0 +1,52 @@
+# --- Core Framework ---
+fastapi==0.110.0
+uvicorn[standard]==0.29.0
+pydantic==2.6.4
+sqlalchemy==2.0.30
+paho-mqtt==2.1.0
+httpx==0.27.0
+# --- Networking & Pentesting Tools ---
+scapy==2.5.0
+pyserial==3.5
+python-multipart==0.0.9
+
+# --- Machine Learning / Analytics ---
+pandas==2.2.2
+numpy==1.26.4
+matplotlib==3.9.0
+torch==2.3.0
+scikit-learn==1.5.0
+
+# --- Background & Schedulers ---
+aiofiles==23.2.1
+schedule==1.2.1
+apscheduler==3.10.4
+
+# --- Export/Backup Utilities ---
+openpyxl==3.1.2
+python-dateutil==2.9.0.post0
+
+# --- Logging, CORS, Env, Security ---
+loguru==0.7.2
+python-dotenv==1.0.1
+requests==2.32.3
+python-decouple==3.8
+aiohttp==3.9.5
+
+# --- WebSocket Comm ---
+websockets==12.0
+
+# --- Mapping ---
+folium==0.15.1
+
+# --- Optional PC‑Side Pentesting Enhancements ---
+pyshark==0.6           # Packet analysis via Wireshark
+rich==13.7.1             # Pretty CLI logging
+
+# --- Optional Aggressive Mode Scripts ---
+psutil==5.9.8            # CPU/memory/net stat (for feedback)
+coloredlogs==15.0.1
+# Serial port discovery
+pyudev==0.24.1
+# --- GTK Desktop UI (built with GTK 4) ---
+PyGObject==3.46.0

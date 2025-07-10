@@ -1,0 +1,12 @@
+#ifndef MACROS_H
+#define MACROS_H
+
+#define OPCODE_CONFIG 0x01
+#define OPCODE_SWITCH_AP 0x02
+#define OPCODE_SCAN_RESULT 0x10
+#define OPCODE_PROBE_RESULT 0x11
+#define OPCODE_CAPTIVE_CRED 0x12
+#define OPCODE_REBOOT 0x20
+#define OPCODE_OTA_FLASH 0x30
+
+#endif

@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+
+# Environment
+.env
+/.venv
+
+# Node
+node_modules/
+
+# Ruff cache
+.ruff_cache/
+frontend/dist/
+
+# compress esp32-ZeusNet driver
+esp32-ZeusNet.zip
+webui/dist/
+zeusnet.db-journal
+zeusnet.db
+backend.log
+frontend.log

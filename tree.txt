@@ -1,0 +1,103 @@
+ZEUSNET
+    ├── .github
+    │   └── workflows
+    │       └── ci.yml
+    ├── backend
+    │   ├── alerts
+    │   │   ├── anomaly.py
+    │   │   ├── mac_tracker.py
+    │   │   └── rogue_ap.py
+    │   ├── api
+    │   │   ├── alerts.py
+    │   │   ├── command.py
+    │   │   ├── covert_ops_agent.py
+    │   │   ├── devices.py
+    │   │   ├── diagnostic.py
+    │   │   ├── export.py
+    │   │   ├── networks.py
+    │   │   ├── nic.py
+    │   │   ├── scan.py
+    │   │   └── settings.py
+    │   ├── c2
+    │   │   └── command_bus.py
+    │   ├── routes
+    │   │   ├── __init__.py
+    │   │   └── networks.py
+    │   ├── db.py
+    │   ├── main.py
+    │   ├── models.py
+    │   └── settings.py
+    ├── docker
+    │   └── mosquitto.conf
+    ├── docs
+    │   └── setup.md
+    ├── esp32-ZeusNet
+    │   ├── captive_portal.ino
+    │   ├── macros.h
+    │   └── zeusnet_esp32.ino
+    ├── frontend
+    │   ├── .vite
+    │   │   └── deps
+    │   │       ├── _metadata.json
+    │   │       └── package.json
+    │   ├── services
+    │   │   ├── __init__.py
+    │   │   └── api_client.py
+    │   ├── utils
+    │   │   ├── __init__.py
+    │   │   └── logging.py
+    │   ├── views
+    │   │   ├── __init__.py
+    │   │   ├── attack_view.py
+    │   │   ├── dashboard_view.py
+    │   │   ├── network_view.py
+    │   │   └── settings_view.py
+    │   ├── widgets
+    │   │   ├── __init__.py
+    │   │   ├── network_list.py
+    │   │   └── status_bar.py
+    │   ├── __init__.py
+    │   ├── app.py
+    │   └── main.py
+    ├── systemd
+    │   └── zeusnet-serial.service
+    ├── webui
+    │   ├── public
+    │   │   └── .gitkeep
+    │   ├── src
+    │   │   ├── components
+    │   │   │   ├── Tabs
+    │   │   │   │   ├── AIAssistant.jsx
+    │   │   │   │   ├── Backups.jsx
+    │   │   │   │   ├── EngageOps.jsx
+    │   │   │   │   ├── NetworkRecon.jsx
+    │   │   │   │   ├── PacketForge.jsx
+    │   │   │   │   └── TargetPlanner.jsx
+    │   │   │   ├── AttackForm.jsx
+    │   │   │   ├── ModeToggle.jsx
+    │   │   │   ├── NetworkOpsPanel.jsx
+    │   │   │   ├── SettingsDrawer.jsx
+    │   │   │   ├── Sidebar.jsx
+    │   │   │   ├── TerminalLog.jsx
+    │   │   │   └── Topbar.jsx
+    │   │   ├── styles
+    │   │   │   └── theme.css
+    │   │   ├── utils
+    │   │   │   └── api.js
+    │   │   ├── App.jsx
+    │   │   └── main.jsx
+    │   ├── index.html
+    │   ├── package-lock.json
+    │   ├── package.json
+    │   └── vite.config.js
+    ├── .env.example
+    ├── .gitignore
+    ├── AGENTS.md
+    ├── doc.md
+    ├── docker-compose.yml
+    ├── gtk_launcher.py
+    ├── README.MD
+    ├── requirements.txt
+    ├── start-zeusnet.bat
+    ├── start-zeusnet.sh
+    ├── tree.txt

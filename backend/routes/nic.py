@@ -20,8 +20,12 @@ class AttackRequest(BaseModel):
     @validator("target")
     def validate_target(cls, v, values):
         if values.get("type") == "deauth":
-            if not (len(v.split(":")) == 6 and all(len(part) == 2 for part in v.split(":"))):
-                raise ValueError("Target must be a valid MAC address for deauth attack.")
+            if not (
+                len(v.split(":")) == 6 and all(len(part) == 2 for part in v.split(":"))
+            ):
+                raise ValueError(
+                    "Target must be a valid MAC address for deauth attack."
+                )
         return v
 
 
@@ -32,9 +36,11 @@ def run_deauth_attack(target: str, iface: str):
     cmd = ["aireplay-ng", "--deauth", "10", "-a", target, iface]
     return run_command(cmd, "Deauth Attack")
 
+
 def run_probe_flood(target: str, iface: str):
     cmd = ["python3", "scripts/probe_flood.py", "--target", target, "--iface", iface]
     return run_command(cmd, "Probe Flood")
+
 
 def run_syn_flood(target: str, iface: str):
     cmd = ["python3", "scripts/syn_flood.py", "--target", target, "--iface", iface]
@@ -44,10 +50,14 @@ def run_syn_flood(target: str, iface: str):
 def run_command(cmd, label):
     try:
         logger.info(f"[NIC] Running {label}: {' '.join(cmd)}")
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=20)
+        result = subprocess.run(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=20
+        )
         if result.returncode != 0:
             logger.error(f"[NIC] {label} Failed: {result.stderr}")
-            raise HTTPException(status_code=500, detail=f"{label} failed: {result.stderr.strip()}")
+            raise HTTPException(
+                status_code=500, detail=f"{label} failed: {result.stderr.strip()}"
+            )
         return {"status": "success", "output": result.stdout.strip()}
     except subprocess.TimeoutExpired:
         logger.warning(f"[NIC] {label} Timed out")
@@ -73,7 +83,9 @@ async def launch_attack(request: Request):
         logger.warning(f"[NIC] Invalid payload: {e}")
         raise HTTPException(status_code=400, detail="Invalid payload format or values.")
 
-    logger.info(f"[NIC] Launching {attack.type} attack on {attack.target} via {attack.iface}")
+    logger.info(
+        f"[NIC] Launching {attack.type} attack on {attack.target} via {attack.iface}"
+    )
 
     if attack.type == "deauth":
         return run_deauth_attack(attack.target, attack.iface)

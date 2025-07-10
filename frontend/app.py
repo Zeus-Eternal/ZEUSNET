@@ -3,13 +3,13 @@
 import gi
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk  # noqa: E402
-from .views.network_view import NetworkView  # noqa: E402
-from .views.attack_view import AttackView  # noqa: E402
-from .views.settings_view import SettingsView  # noqa: E402
-from .views.dashboard_view import DashboardView  # noqa: E402
-from .views.packetforge_view import PacketForgeView  # noqa: E402
-from .views.aiassistant_view import AIAssistantView  # noqa: E402
+from gi.repository import Gtk
+from .views.network_view import NetworkView
+from .views.attack_view import AttackView
+from .views.packetforge_view import PacketForgeView
+from .views.aiassistant_view import AIAssistantView
+from .views.settings_view import SettingsView
+from .views.dashboard_view import DashboardView
 
 
 class ZeusApp(Gtk.Application):

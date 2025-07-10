@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 import logging
 
 from backend.utils.logging import configure_logging
+
+# 🧠 Real ZeusNet routers
 from backend.api import (
     scan,
     networks,

@@ -1,4 +1,0 @@
-2025-07-09 18:42:29,945 - frontend.views.network_view - INFO - Target selected: {'id': 39249, 'ssid': 'tldff058', 'rssi': -61}
-2025-07-09 18:42:45,095 - frontend.views.network_view - INFO - Target selected: {'id': 39249, 'ssid': 'tldff058', 'rssi': -61}
-Launching ZeusNet GTK Frontend...
-ZeusNet exited with code: 0

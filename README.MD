@@ -204,6 +204,16 @@ Additional modes such as `survey` and `jam` provide blue‑team defensive action
 
 Creates daily backup in `/backups/net_scan_YYYYMMDD.csv.gz`
 
+## 🗄️ Data Migration
+
+`zeusnet.db`, `backend.log` and `frontend.log` are no longer tracked in Git. To restore a previous database snapshot, extract it from an earlier commit:
+
+```bash
+git show <commit-hash>:zeusnet.db > zeusnet.db.old
+```
+
+Import or archive the file as needed before upgrading.
+
 ## 🏭 Production Deployment
 
 For stable, long-running operation install dependencies and launch Uvicorn

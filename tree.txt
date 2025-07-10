@@ -101,4 +101,3 @@ ZEUSNET
     ├── start-zeusnet.bat
     ├── start-zeusnet.sh
     ├── tree.txt
-    └── zeusnet.db

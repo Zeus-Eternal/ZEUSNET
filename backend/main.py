@@ -19,9 +19,6 @@ from backend.api import (
     covert_ops_agent,
     aireplay,
 )
-from backend.routes import networks as route_networks
-from backend.routes import settings as route_settings
-from backend.routes import nic as route_nic
 
 from backend.c2.command_bus import start_bus
 from backend.db import init_db
@@ -53,7 +50,7 @@ def read_root():
         "scan": "/api/scan",
         "command": "/api/command",
         "export_csv": "/api/export/csv",
-        "mode": "/api/settings/mode",
+        "settings": "/api/settings",
     }
 
 # API Routers (always /api prefix)
@@ -68,11 +65,6 @@ app.include_router(nic.router, prefix="/api")
 app.include_router(diagnostic.router, prefix="/api")
 app.include_router(covert_ops_agent.router, prefix="/api")
 app.include_router(aireplay.router, prefix="/api")
-
-# Custom SQLAlchemy routes (for legacy/extra DB stuff)
-app.include_router(route_networks.router, prefix="/api")
-app.include_router(route_settings.router)
-app.include_router(route_nic.router)
 
 # Startup: DB and C2 bus
 @app.on_event("startup")

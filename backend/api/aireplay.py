@@ -6,6 +6,8 @@ from typing import Optional
 from pathlib import Path
 import tempfile
 
+from backend import settings
+
 router = APIRouter()
 logger = logging.getLogger("zeusnet.aireplay")
 
@@ -19,8 +21,15 @@ AIREPLAY_LOG_DIR.mkdir(parents=True, exist_ok=True)
 AIREPLAY_BIN = "/usr/bin/aireplay-ng"  # Change as needed
 AIREPLAY_IFACE = "wlan0mon"            # UI-configurable in real build
 
-def run_aireplay_deauth(bssid, client_mac=None, channel=None, iface=AIREPLAY_IFACE, log_id=""):
-    cmd = [AIREPLAY_BIN, "--deauth", "10", "-a", bssid]
+def run_aireplay_deauth(
+    bssid,
+    client_mac=None,
+    channel=None,
+    iface=AIREPLAY_IFACE,
+    count=10,
+    log_id="",
+):
+    cmd = [AIREPLAY_BIN, "--deauth", str(count), "-a", bssid]
     if client_mac:
         cmd += ["-c", client_mac]
     cmd.append(iface)
@@ -56,7 +65,11 @@ def aireplay_deauth(
     target_bssid: str = Query(..., description="Target BSSID (AP MAC address)"),
     client_mac: Optional[str] = Query(None, description="Client MAC address to target (optional)"),
     channel: Optional[int] = Query(None, description="Wi-Fi channel (optional)"),
+    count: int = Query(10, description="Number of deauth frames to send"),
+    iface: str = Query(AIREPLAY_IFACE, description="Network interface"),
 ):
+    if settings.ZEUSNET_MODE.upper() == "SAFE":
+        raise HTTPException(status_code=403, detail="Blocked in SAFE mode")
     if not Path(AIREPLAY_BIN).exists():
         raise HTTPException(status_code=500, detail=f"aireplay-ng binary not found at {AIREPLAY_BIN}")
     if not target_bssid:
@@ -69,7 +82,13 @@ def aireplay_deauth(
         raise HTTPException(status_code=500, detail=f"Cannot create log dir: {AIREPLAY_LOG_DIR}: {e}")
 
     background_tasks.add_task(
-        run_aireplay_deauth, target_bssid, client_mac, channel, AIREPLAY_IFACE, log_id
+        run_aireplay_deauth,
+        target_bssid,
+        client_mac,
+        channel,
+        iface,
+        count,
+        log_id,
     )
     logger.info(f"Queued aireplay-ng deauth: bssid={target_bssid} client={client_mac} channel={channel}")
     return {

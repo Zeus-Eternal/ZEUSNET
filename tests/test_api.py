@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 # Import routers and settings
-from backend.api import networks, settings as settings_api
+from backend.api import networks, settings as settings_api, nic, aireplay
 from backend.db import init_db
 import backend.settings as config
 
@@ -16,6 +16,9 @@ def client():
     app = FastAPI()
     app.include_router(networks.router, prefix="/api")
     app.include_router(settings_api.router, prefix="/api")
+    app.include_router(nic.router, prefix="/api")
+    app.include_router(aireplay.router, prefix="/api")
+    aireplay.AIREPLAY_BIN = "/bin/echo"
     with TestClient(app) as c:
         yield c
 
@@ -53,3 +56,43 @@ def test_aggressive_mode_updates_network_fields(client):
     assert items
     item = items[0]
     assert {"bssid", "auth", "channel", "timestamp"} <= item.keys()
+
+
+def test_nic_attack_requires_aggressive(client):
+    resp = client.post(
+        "/api/nic/attack",
+        json={"mode": "deauth", "target": "AA:BB:CC:DD:EE:FF"},
+    )
+    assert resp.status_code == 403
+
+
+def test_nic_attack_after_mode_change(client):
+    client.post("/api/settings", json={"mode": "AGGRESSIVE"})
+    resp = client.post(
+        "/api/nic/attack",
+        json={"mode": "deauth", "target": "AA:BB:CC:DD:EE:FF"},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "started"
+    assert "pid" in data
+
+
+def test_aireplay_deauth_guard(client):
+    client.post("/api/settings", json={"mode": "SAFE"})
+    resp = client.post(
+        "/api/aireplay/deauth",
+        params={"target_bssid": "AA:BB:CC:DD:EE:FF"},
+    )
+    assert resp.status_code == 403
+
+
+def test_aireplay_deauth_runs(client):
+    client.post("/api/settings", json={"mode": "AGGRESSIVE"})
+    resp = client.post(
+        "/api/aireplay/deauth",
+        params={"target_bssid": "AA:BB:CC:DD:EE:FF"},
+    )
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "queued"
+

@@ -53,6 +53,12 @@ npm install
 npm run dev
 ```
 
+To check formatting of the React sources, run Prettier:
+
+```bash
+prettier --check "webui/**/*.{js,jsx,ts,tsx}"
+```
+
 ### ⚙️ Enable systemd Service (Optional)
 
 ```bash

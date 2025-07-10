@@ -48,6 +48,11 @@ button {
   align-items: center;
 }
 
+.topbar .mode {
+  margin-right: 1rem;
+  font-weight: bold;
+}
+
 .main {
   flex: 1;
   display: flex;
@@ -79,4 +84,9 @@ button {
   padding: 1rem;
   width: 250px;
   height: 100vh;
+}
+
+form.locked {
+  opacity: 0.5;
+  pointer-events: none;
 }

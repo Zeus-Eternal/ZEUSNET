@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { sendAttack } from "../utils/api";
+import { useSettings } from "../utils/SettingsContext";
 
 export default function AttackForm({ log }) {
+  const { settings } = useSettings();
   const [mode, setMode] = useState("deauth");
   const [target, setTarget] = useState("");
   const [channel, setChannel] = useState(6);
@@ -22,13 +24,17 @@ export default function AttackForm({ log }) {
     }
   };
 
+  const disabled = settings.mode !== "AGGRESSIVE";
+
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className={disabled ? "locked" : ""}>
       <label>Attack Type</label>
       <select value={mode} onChange={(e) => setMode(e.target.value)}>
         <option value="deauth">Deauth</option>
         <option value="pmkid">PMKID Capture</option>
         <option value="rogue_ap">Rogue AP</option>
+        <option value="probe">Probe Flood</option>
+        <option value="syn_flood">SYN Flood</option>
       </select>
 
       {(mode === "deauth" || mode === "rogue_ap") && (
@@ -50,7 +56,9 @@ export default function AttackForm({ log }) {
         onChange={(e) => setChannel(e.target.value)}
       />
 
-      <button disabled={loading}>{loading ? "Deploying..." : "Launch Attack"}</button>
+      <button disabled={loading || disabled}>
+        {disabled ? "Locked" : loading ? "Deploying..." : "Launch Attack"}
+      </button>
     </form>
   );
 }

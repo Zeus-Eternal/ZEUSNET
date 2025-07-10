@@ -1,14 +1,21 @@
+import apiClient from "./apiClient";
+
 export async function sendAttack({ mode, target, channel }) {
-  const res = await fetch("/api/nic/attack", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ mode, target, channel }),
+  const { data } = await apiClient.post("/nic/attack", {
+    mode,
+    target,
+    channel,
   });
+  return data;
+}
 
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.detail || "Unknown error");
-  }
+export async function fetchSettings() {
+  const { data } = await apiClient.get("/settings");
+  return data;
+}
 
-  return await res.json();
+export async function updateMode(mode) {
+  const { data } = await apiClient.post("/settings", { mode });
+  localStorage.setItem("ZEUSNET_MODE", data.mode);
+  return data;
 }

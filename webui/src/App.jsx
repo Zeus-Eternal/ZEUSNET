@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSettings } from "./utils/SettingsContext";
 import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
 import SettingsDrawer from "./components/SettingsDrawer";
@@ -11,6 +12,7 @@ import AIAssistant from "./components/Tabs/AIAssistant";
 import Backups from "./components/Tabs/Backups";
 
 export default function App() {
+  const { settings } = useSettings();
   const [activeTab, setActiveTab] = useState("NetworkRecon");
   const [showSettings, setShowSettings] = useState(false);
   const [logLines, setLogLines] = useState([]);

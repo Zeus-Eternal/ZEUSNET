@@ -20,7 +20,6 @@ from backend.api import (
     covert_ops_agent,
 )
 from backend.routes import networks as demo_networks
-from backend.routes import settings as settings_route
 from backend.routes import nic as nic_route
 
 from backend.c2.command_bus import start_bus
@@ -54,7 +53,7 @@ def read_root():
         "scan": "/api/scan",
         "command": "/api/command",
         "export_csv": "/api/export/csv",
-        "mode": "/api/settings/mode",
+        "settings": "/api/settings",
     }
 
 # 🔌 API Routers (All organized under /api/*)
@@ -72,7 +71,6 @@ app.include_router(covert_ops_agent.router, prefix="/api")
 app.include_router(aireplay.router, prefix="/api")
 
 # 🛠 New settings and NIC routes (mode toggling, watchdog, serial config)
-app.include_router(settings_route.router)
 app.include_router(nic_route.router)
 
 # 🚀 Startup Tasks: Init DB and Command Bus

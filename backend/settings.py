@@ -12,3 +12,6 @@ SERIAL_BAUD = int(os.getenv("SERIAL_BAUD", "115200"))
 MQTT_BROKER = os.getenv("MQTT_BROKER", "localhost")
 MQTT_TOPIC = os.getenv("MQTT_TOPIC", "zeusnet")
 RETRY_LIMIT = int(os.getenv("RETRY_LIMIT", "3"))
+
+# Watchdog toggle for aggressive actions
+WATCHDOG_ENABLED = os.getenv("WATCHDOG_ENABLED", "false").lower() == "true"

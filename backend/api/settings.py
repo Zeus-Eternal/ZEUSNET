@@ -13,6 +13,7 @@ def get_settings():
         "mode": config.ZEUSNET_MODE,
         "serial_port": config.SERIAL_PORT,
         "serial_baud": config.SERIAL_BAUD,
+        "watchdog": config.WATCHDOG_ENABLED,
     }
 
 
@@ -20,6 +21,7 @@ class SettingsUpdate(BaseModel):
     mode: str | None = None
     serial_port: str | None = None
     serial_baud: int | None = None
+    watchdog: bool | None = None
 
 
 @router.post("/settings")
@@ -33,4 +35,7 @@ def update_settings(data: SettingsUpdate):
     if data.serial_baud:
         config.SERIAL_BAUD = data.serial_baud
         os.environ["SERIAL_BAUD"] = str(data.serial_baud)
+    if data.watchdog is not None:
+        config.WATCHDOG_ENABLED = data.watchdog
+        os.environ["WATCHDOG_ENABLED"] = "true" if data.watchdog else "false"
     return get_settings()

@@ -36,7 +36,9 @@ class SettingsAPIClient:
         threading.Thread(target=_task, daemon=True).start()
 
     def set_mode(self, mode: str) -> Dict[str, Any]:
-        resp = requests.post(f"{self.base_url}/settings/mode", json={"mode": mode}, timeout=6)
+        resp = requests.post(
+            f"{self.base_url}/settings", json={"mode": mode}, timeout=6
+        )
         if resp.status_code != 200:
             raise APIError(f"HTTP {resp.status_code}: {resp.text}")
         return resp.json()
@@ -51,7 +53,9 @@ class SettingsAPIClient:
         threading.Thread(target=_task, daemon=True).start()
 
     def set_serial_port(self, port: str) -> Dict[str, Any]:
-        resp = requests.post(f"{self.base_url}/settings/serial_port", json={"serial_port": port}, timeout=6)
+        resp = requests.post(
+            f"{self.base_url}/settings", json={"serial_port": port}, timeout=6
+        )
         if resp.status_code != 200:
             raise APIError(f"HTTP {resp.status_code}: {resp.text}")
         return resp.json()
@@ -66,7 +70,9 @@ class SettingsAPIClient:
         threading.Thread(target=_task, daemon=True).start()
 
     def set_watchdog(self, enabled: bool) -> Dict[str, Any]:
-        resp = requests.post(f"{self.base_url}/settings/watchdog", json={"watchdog": enabled}, timeout=6)
+        resp = requests.post(
+            f"{self.base_url}/settings", json={"watchdog": enabled}, timeout=6
+        )
         if resp.status_code != 200:
             raise APIError(f"HTTP {resp.status_code}: {resp.text}")
         return resp.json()

@@ -32,7 +32,7 @@ Launch the desktop UI with tabs for network lists, signal charts,
 an experimental map view and attack controls:
 
 ```bash
-python frontend/main.py
+python -m frontend.main
 ```
 
 Requires the `PyGObject` package with GTK **4** support.

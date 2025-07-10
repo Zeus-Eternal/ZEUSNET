@@ -3,4 +3,4 @@
 import sys
 import os
 
-os.execv(sys.executable, ["python3", "frontend/main.py"])
+os.execv(sys.executable, ["python3", "-m", "frontend.main"])

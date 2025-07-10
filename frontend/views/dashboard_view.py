@@ -11,6 +11,7 @@ from gi.repository import Gtk, GdkPixbuf
 
 logger = logging.getLogger(__name__)
 
+
 class DashboardView(Gtk.Box):
     """
     Dashboard panel showing stats and a live histogram chart.
@@ -69,11 +70,17 @@ class DashboardView(Gtk.Box):
 
             fig = Figure(figsize=(6, 3), dpi=100)
             ax = fig.add_subplot(111)
-            ax.hist(rssi_values, bins=10, range=(-100, 0), color="#007acc", edgecolor="black")
+            ax.hist(
+                rssi_values,
+                bins=10,
+                range=(-100, 0),
+                color="#007acc",
+                edgecolor="black",
+            )
             ax.set_title("Signal Strength Distribution")
             ax.set_xlabel("RSSI (dBm)")
             ax.set_ylabel("Count")
-            ax.grid(True, linestyle='--', alpha=0.5)
+            ax.grid(True, linestyle="--", alpha=0.5)
 
             buf = io.BytesIO()
             FigureCanvas(fig).print_png(buf)

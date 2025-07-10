@@ -49,6 +49,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 def read_root():
     return {
@@ -64,6 +65,7 @@ def read_root():
         "forge": "/api/forge/send",
         "assistant": "/api/assistant/chat",
     }
+
 
 # API Routers (always /api prefix)
 app.include_router(scan.router, prefix="/api")
@@ -84,6 +86,7 @@ app.include_router(assistant.router, prefix="/api")
 app.include_router(route_networks.router, prefix="/api")
 app.include_router(route_settings.router)
 app.include_router(route_nic.router)
+
 
 # Startup: DB and C2 bus
 @app.on_event("startup")

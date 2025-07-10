@@ -12,8 +12,9 @@ from gi.repository import Gtk, Gdk  # noqa: E402  # Gdk needed for CSS
 # Allow running as "python frontend/main.py" by adding repo root
 if __package__ is None:
     sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+    
+from frontend.utils.path_setup import ensure_repo_root_on_path
 
-from frontend.utils.path_setup import ensure_repo_root_on_path  # noqa: E402
 ensure_repo_root_on_path()
 
 # --- CSS LOADER: Load custom style before any windows ---
@@ -33,7 +34,7 @@ if os.path.exists(CSS_PATH):
 def main() -> int:
     from frontend.app import ZeusApp
     from frontend.utils.logging import configure_logging
-    
+
     configure_logging()
     logger = logging.getLogger(__name__)
     logger.info("Launching ZeusNet GTK Frontend...")

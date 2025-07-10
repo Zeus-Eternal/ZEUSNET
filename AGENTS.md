@@ -6,7 +6,7 @@ This project uses both Python and JavaScript/TypeScript. Keep the codebase clean
 
 - `src/` contains Python source modules.
 - `tests/` holds Python test suites executed with **pytest**.
-- `js/` contains JavaScript/TypeScript sources. Tests for this code live in `js/__tests__/` and run with **jest**.
+- `webui/` contains JavaScript/TypeScript sources. Tests for this code live in `webui/__tests__/` and run with **jest**.
 - Miscellaneous project documentation and configuration live in the repository root.
 
 ## Style
@@ -18,7 +18,7 @@ This project uses both Python and JavaScript/TypeScript. Keep the codebase clean
 ## Running tests
 
 - Execute `pytest` from the repository root to run the Python test suite.
-- Execute `npm test` in the `js/` directory to run the jest suite.
+- Execute `npm test` in the `webui/` directory to run the jest suite.
 
 ## CI expectations
 
@@ -27,9 +27,9 @@ Pull requests should pass all linting and test commands:
 ```bash
 ruff .
 black --check .
-prettier --check "js/**/*.{js,ts}"
+prettier --check "webui/**/*.{js,jsx,ts,tsx}"
 pytest
-( cd js && npm test )
+( cd webui && npm test )
 ```
 
 CI will fail if any of these steps fail. Ensure new code includes appropriate tests.

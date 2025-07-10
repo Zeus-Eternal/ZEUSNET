@@ -11,6 +11,7 @@ try:
 except ImportError:  # pragma: no cover
     import os
     import sys
+
     CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
     PARENT_DIR = os.path.dirname(CURRENT_DIR)
     GRANDPARENT_DIR = os.path.dirname(PARENT_DIR)

@@ -1,4 +1,11 @@
+import os
+import sys
+
 import pytest
+
+# Ensure the backend package is importable when running `pytest` directly.
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 from backend.agents.map_intel import MapIntelligence
 
 

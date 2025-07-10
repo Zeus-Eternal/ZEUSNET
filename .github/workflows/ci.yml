@@ -21,8 +21,6 @@ jobs:
         run: ruff check .
       - name: Pytest
         run: pytest
-      - name: Pytest coverage check (placeholder)
-        run: echo "TODO: enforce coverage thresholds"
   js:
     runs-on: ubuntu-latest
     steps:
@@ -39,5 +37,3 @@ jobs:
           fi
       - name: Jest
         run: npm test --if-present
-      - name: Jest coverage check (placeholder)
-        run: echo "TODO: enforce coverage thresholds"

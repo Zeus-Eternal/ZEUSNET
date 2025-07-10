@@ -14,15 +14,15 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install dependencies
-        run: pip install black ruff pytest
+        run: pip install black ruff pytest pytest-cov
       - name: Black check
         run: black --check .
       - name: Ruff lint
         run: ruff check .
       - name: Pytest
         run: pytest
-      - name: Pytest coverage check (placeholder)
-        run: echo "TODO: enforce coverage thresholds"
+      - name: Pytest coverage check
+        run: pytest --cov=. --cov-report=term --cov-fail-under=80
   js:
     runs-on: ubuntu-latest
     steps:
@@ -39,5 +39,10 @@ jobs:
           fi
       - name: Jest
         run: npm test --if-present
-      - name: Jest coverage check (placeholder)
-        run: echo "TODO: enforce coverage thresholds"
+      - name: Jest coverage check
+        run: |
+          if npx --yes jest --version >/dev/null 2>&1; then
+            npx jest --coverage --coverageThreshold='{ "global": { "lines": 80 } }'
+          else
+            echo "No Jest tests to run"
+          fi

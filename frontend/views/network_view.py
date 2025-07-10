@@ -7,9 +7,9 @@ import logging
 from typing import Dict
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, GLib
-from ..widgets.network_list import NetworkList
-from backend.services.api_client import NetworkAPIClient
+from gi.repository import Gtk, GLib  # noqa: E402
+from ..widgets.network_list import NetworkList  # noqa: E402
+from backend.services.api_client import NetworkAPIClient  # noqa: E402
 
 logger = logging.getLogger(__name__)
 

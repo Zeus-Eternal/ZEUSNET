@@ -4,10 +4,6 @@ from dotenv import load_dotenv
 import logging
 
 from backend.utils.logging import configure_logging
-
-logger = logging.getLogger(__name__)
-
-# 🧠 Real ZeusNet routers
 from backend.api import (
     scan,
     networks,
@@ -30,6 +26,8 @@ from backend.routes import nic as route_nic
 from backend.core.agent_manager import agent_manager
 from backend.db import init_db
 
+logger = logging.getLogger(__name__)
+
 # 🧠 Load env vars (e.g., ZEUSNET_MODE)
 load_dotenv()
 
@@ -49,6 +47,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 def read_root():
     return {
@@ -64,6 +63,7 @@ def read_root():
         "forge": "/api/forge/send",
         "assistant": "/api/assistant/chat",
     }
+
 
 # API Routers (always /api prefix)
 app.include_router(scan.router, prefix="/api")
@@ -84,6 +84,7 @@ app.include_router(assistant.router, prefix="/api")
 app.include_router(route_networks.router, prefix="/api")
 app.include_router(route_settings.router)
 app.include_router(route_nic.router)
+
 
 # Startup: DB and C2 bus
 @app.on_event("startup")

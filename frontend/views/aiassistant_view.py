@@ -4,13 +4,14 @@
 import gi
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk
+from gi.repository import Gtk  # noqa: E402
 
 try:
     from backend.services.api_client import AIAssistantAPIClient
 except ImportError:  # pragma: no cover
     import os
     import sys
+
     CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
     PARENT_DIR = os.path.dirname(CURRENT_DIR)
     GRANDPARENT_DIR = os.path.dirname(PARENT_DIR)

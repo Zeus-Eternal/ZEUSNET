@@ -42,3 +42,9 @@ def get_networks(
         return base
 
     return [_to_dict(s) for s in scans]
+
+
+@router.get("/WiFiScans")
+def get_wifi_scans(limit: int = 50, db: Session = Depends(get_db)):
+    rows = db.query(WiFiScan).order_by(WiFiScan.id.desc()).limit(limit).all()
+    return [s.to_dict() for s in rows]

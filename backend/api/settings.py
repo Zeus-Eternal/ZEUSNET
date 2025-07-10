@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import os
 
@@ -22,6 +22,21 @@ class SettingsUpdate(BaseModel):
     serial_baud: int | None = None
 
 
+class ModeUpdate(BaseModel):
+    mode: str
+
+
+class SerialPortUpdate(BaseModel):
+    port: str
+
+
+class WatchdogUpdate(BaseModel):
+    enabled: bool
+
+
+watchdog_enabled = False
+
+
 @router.post("/settings")
 def update_settings(data: SettingsUpdate):
     if data.mode:
@@ -34,3 +49,27 @@ def update_settings(data: SettingsUpdate):
         config.SERIAL_BAUD = data.serial_baud
         os.environ["SERIAL_BAUD"] = str(data.serial_baud)
     return get_settings()
+
+
+@router.post("/settings/mode")
+def update_mode(payload: ModeUpdate):
+    mode = payload.mode.upper()
+    if mode not in ["SAFE", "AGGRESSIVE"]:
+        raise HTTPException(status_code=400, detail="Invalid mode")
+    config.ZEUSNET_MODE = mode
+    os.environ["ZEUSNET_MODE"] = mode
+    return {"status": "ok", "mode": mode}
+
+
+@router.post("/settings/serial_port")
+def set_serial_port(payload: SerialPortUpdate):
+    config.SERIAL_PORT = payload.port
+    os.environ["SERIAL_PORT"] = payload.port
+    return {"status": "ok", "port": payload.port}
+
+
+@router.post("/settings/watchdog")
+def toggle_watchdog(payload: WatchdogUpdate):
+    global watchdog_enabled
+    watchdog_enabled = payload.enabled
+    return {"status": "ok", "watchdog": watchdog_enabled}

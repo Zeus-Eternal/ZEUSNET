@@ -5,13 +5,10 @@ GeoJSON feature collector for the UI heat-map.
 """
 
 import logging
-
-
-logger = logging.getLogger("zeusnet.map_intel")
-
-
 from collections import deque
 from typing import Deque
+
+logger = logging.getLogger("zeusnet.map_intel")
 
 
 class MapIntelligence:

@@ -6,15 +6,19 @@ import sys
 import logging
 import gi
 
-gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, Gdk  # noqa: E402  # Gdk needed for CSS
+try:
+    from frontend.utils.path_setup import ensure_repo_root_on_path
+except ImportError:  # pragma: no cover - allow running directly
+    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+    from frontend.utils.path_setup import ensure_repo_root_on_path
 
+gi.require_version("Gtk", "4.0")
+from gi.repository import Gtk, Gdk 
 # Allow running as "python frontend/main.py" by adding repo root
 if __package__ is None:
     sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
     
 from frontend.utils.path_setup import ensure_repo_root_on_path
-
 ensure_repo_root_on_path()
 
 # --- CSS LOADER: Load custom style before any windows ---

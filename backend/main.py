@@ -5,8 +5,6 @@ import logging
 
 from backend.utils.logging import configure_logging
 
-logger = logging.getLogger(__name__)
-
 # 🧠 Real ZeusNet routers
 from backend.api import (
     scan,
@@ -29,6 +27,8 @@ from backend.routes import nic as route_nic
 
 from backend.core.agent_manager import agent_manager
 from backend.db import init_db
+
+logger = logging.getLogger(__name__)
 
 # 🧠 Load env vars (e.g., ZEUSNET_MODE)
 load_dotenv()

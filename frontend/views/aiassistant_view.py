@@ -4,10 +4,10 @@
 import gi
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk
+from gi.repository import Gtk  # noqa: E402
 
 try:
-    from backend.services.api_client import AIAssistantAPIClient
+    from backend.services.api_client import AIAssistantAPIClient  # noqa: E402
 except ImportError:  # pragma: no cover
     import os
     import sys
@@ -17,7 +17,7 @@ except ImportError:  # pragma: no cover
     GRANDPARENT_DIR = os.path.dirname(PARENT_DIR)
     if GRANDPARENT_DIR not in sys.path:
         sys.path.insert(0, GRANDPARENT_DIR)
-    from backend.services.api_client import AIAssistantAPIClient
+    from backend.services.api_client import AIAssistantAPIClient  # noqa: E402
 
 
 class AIAssistantView(Gtk.Box):

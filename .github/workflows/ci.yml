@@ -38,7 +38,7 @@ jobs:
             npm install
           fi
       - name: Prettier check
-        run: npx prettier --check "webui/**/*.{js,jsx,ts,tsx}"
+        run: prettier --check "webui/**/*.{js,jsx,ts,tsx}"
       - name: Jest
         run: npm test --if-present
       - name: Jest coverage check

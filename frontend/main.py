@@ -13,7 +13,7 @@ from gi.repository import Gtk, Gdk  # noqa: E402  # Gdk needed for CSS
 if __package__ is None:
     sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from frontend.utils.path_setup import ensure_repo_root_on_path
+from frontend.utils.path_setup import ensure_repo_root_on_path  # noqa: E402
 ensure_repo_root_on_path()
 
 # --- CSS LOADER: Load custom style before any windows ---

@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from backend.db import get_db
+from backend.models import WiFiScan
+
 router = APIRouter()
 
 

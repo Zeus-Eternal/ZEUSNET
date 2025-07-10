@@ -4,10 +4,10 @@
 import gi
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk
+from gi.repository import Gtk  # noqa: E402
 
 try:
-    from backend.services.api_client import ForgeAPIClient
+    from backend.services.api_client import ForgeAPIClient  # noqa: E402
 except ImportError:  # pragma: no cover - fallback when run directly
     import os
     import sys
@@ -16,7 +16,7 @@ except ImportError:  # pragma: no cover - fallback when run directly
     GRANDPARENT_DIR = os.path.dirname(PARENT_DIR)
     if GRANDPARENT_DIR not in sys.path:
         sys.path.insert(0, GRANDPARENT_DIR)
-    from backend.services.api_client import ForgeAPIClient
+    from backend.services.api_client import ForgeAPIClient  # noqa: E402
 
 
 class PacketForgeView(Gtk.Box):

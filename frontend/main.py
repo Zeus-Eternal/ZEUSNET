@@ -21,16 +21,10 @@ if os.path.exists(CSS_PATH):
         Gtk.STYLE_PROVIDER_PRIORITY_USER,
     )
 
+
 def main() -> int:
-    try:
-        from frontend.app import ZeusApp
-        from frontend.utils.logging import configure_logging
-    except ImportError:
-        PARENT_DIR = os.path.dirname(CURRENT_DIR)
-        if PARENT_DIR not in sys.path:
-            sys.path.insert(0, PARENT_DIR)
-        from frontend.app import ZeusApp
-        from frontend.utils.logging import configure_logging
+    from frontend.app import ZeusApp
+    from frontend.utils.logging import configure_logging
 
     print("Launching ZeusNet GTK Frontend...")
     configure_logging()
@@ -38,6 +32,7 @@ def main() -> int:
     rc = app.run()
     print("ZeusNet exited with code:", rc)
     return rc
+
 
 if __name__ == "__main__":
     sys.exit(main())

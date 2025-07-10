@@ -3,6 +3,7 @@
 
 import os
 import sys
+import logging
 import gi
 
 gi.require_version("Gtk", "4.0")
@@ -26,11 +27,12 @@ def main() -> int:
     from frontend.app import ZeusApp
     from frontend.utils.logging import configure_logging
 
-    print("Launching ZeusNet GTK Frontend...")
     configure_logging()
+    logger = logging.getLogger(__name__)
+    logger.info("Launching ZeusNet GTK Frontend...")
     app = ZeusApp()
     rc = app.run()
-    print("ZeusNet exited with code:", rc)
+    logger.info("ZeusNet exited with code: %s", rc)
     return rc
 
 

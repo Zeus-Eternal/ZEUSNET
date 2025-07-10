@@ -1,10 +1,9 @@
 import gi
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, GObject, Gdk
+from gi.repository import Gtk, GObject 
 
 from backend.services.api_client import NetworkAPIClient
-
 
 class NetworkList(Gtk.ScrolledWindow):
     __gsignals__ = {

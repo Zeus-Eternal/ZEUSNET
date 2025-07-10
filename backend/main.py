@@ -7,9 +7,6 @@ from backend.utils.logging import configure_logging
 
 logger = logging.getLogger(__name__)
 
-# 🧠 Load env vars (e.g., ZEUSNET_MODE)
-load_dotenv()
-
 # 🧠 Real ZeusNet routers
 from backend.api import (
     scan,
@@ -30,6 +27,9 @@ from backend.routes import nic as route_nic
 
 from backend.c2.command_bus import start_bus
 from backend.db import init_db
+
+# 🧠 Load env vars (e.g., ZEUSNET_MODE)
+load_dotenv()
 
 # 🚀 FastAPI app
 app = FastAPI(

@@ -1,3 +1,46 @@
+# Repository Guidelines
+
+This project uses both Python and JavaScript/TypeScript. Keep the codebase clean and organized so that continuous integration (CI) runs smoothly.
+
+## Directory layout
+
+- `src/` contains Python source modules.
+- `tests/` holds Python test suites executed with **pytest**.
+- `webui/` contains JavaScript/TypeScript sources. Tests for this code live in `webui/__tests__/` and run with **jest**.
+- Miscellaneous project documentation and configuration live in the repository root.
+
+## Style
+
+- Format Python code with **Black** and lint with **Ruff**.
+- Format JavaScript/TypeScript with **Prettier**.
+- Python files use 4 spaces per indent. JavaScript/TypeScript uses 2 spaces.
+
+## Running tests
+
+- Execute `pytest` from the repository root to run the Python test suite.
+- Execute `npm test` in the `webui/` directory to run the jest suite.
+
+## CI expectations
+
+Pull requests should pass all linting and test commands:
+
+```bash
+ruff .
+black --check .
+prettier --check "webui/**/*.{js,jsx,ts,tsx}"
+pytest
+( cd webui && npm test )
+```
+
+CI will fail if any of these steps fail. Ensure new code includes appropriate tests.
+
+## Coding conventions
+
+- Keep commit messages concise yet descriptive.
+- Provide docstrings for all public Python classes and functions.
+- Use type hints in new Python code where practical.
+- Prefer descriptive variable names and avoid large functions; break complex logic into smaller helpers.
+=======
 # ZEUSNET • Intelligent Agents Manifest
 *A single source-of-truth for every autonomous module in the ZeusNet arsenal.*
 
@@ -9,7 +52,7 @@
 |-----------------|-------------|-----------------------------------------------------------------------------------------------|----------------------------------------------|
 | ZeusRelay       | MQTT Agent  | Bridges MQTT ⇆ Serial traffic for remote command & control, status heartbeat propagation      | `backend/agents/zeus_relay.py`               |
 | SignalWatcher   | Sensor AI   | Listens to ESP32 RSSI / SSID data, de-noises, timestamps and streams into the DB              | `backend/agents/signal_watcher.py`           |
-| MapIntelligence | Visual AI   | Converts live network events into geo-referenced overlays for the UI heat-map                 | `backend/agents/map_intel.py`                |
+| MapIntelligence | Visual AI   | ⚙️ Planned - convert events to heat-map overlays                 | `backend/agents/map_intel.py`               |
 | AnomalyGuard    | Defense AI  | Performs statistical / ML anomaly detection on signal metrics                                 | `backend/agents/anomaly_guard.py`            |
 | CommandHub      | Core Agent  | Central intent router: interprets user inputs & dispatches tasks to other agents              | `backend/agents/command_hub.py`              |
 
@@ -138,14 +181,14 @@ mosquitto_pub -t zeusnet/from_esp -m '{"ssid":"Test","bssid":"aa:bb","rssi":-42,
 
 **Type**: `Synthesizer`
 **ID**: `agent_mapintel`
-**Status**: 🟢 Active
-**Version**: `v1.0.0`
+**Status**: ⚙️ Planned
+**Version**: `v0.1.0`
 **Scope**: `Hybrid`
-**Visibility**: `User-facing`
+**Visibility**: `Experimental`
 
 ### 🎯 Purpose
 
-Transforms processed signal events into GeoJSON heat-layers for the React or GTK front-end, enabling a real-time map overlay.
+Transforms processed signal events into GeoJSON heat-layers for the React or GTK front-end, enabling a real-time map overlay. *(Not yet implemented)*
 
 ### 🔧 Capabilities
 
@@ -273,6 +316,7 @@ curl -X POST http://localhost:8000/api/command -d '{"opcode":1,"payload":{"scan"
 | ReconBot      | Recon Agent  | ⚙️ Planned | Actively sweeps all channels & logs new BSSIDs   |
 | IntelBroker   | Meta Agent   | ⚙️ Planned | Aggregates intel from multiple ZeusNet instances |
 | ZeusCommander | Master Agent | ⚙️ Planned | Multi-node orchestration & advanced task graph   |
+| MapIntelligence | Visual AI   | ⚙️ Planned | Creates GeoJSON overlays for the heatmap dashboard |
 
 ---
 
@@ -335,6 +379,3 @@ curl -X POST http://localhost:8000/api/command -d '{"opcode":1,"payload":{"scan"
 > **Last Updated:** 2025-06-25
 ```
 
----
-
-**Usage**: Save this content as `AGENTS.md` at repo root. Codex and devs will now parse, validate, and extend agents in perfect style.

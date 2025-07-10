@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+import logging
 
-# 🧠 Load env vars (e.g., ZEUSNET_MODE)
-load_dotenv()
+from backend.utils.logging import configure_logging
+
+logger = logging.getLogger(__name__)
 
 # 🧠 Real ZeusNet routers
 from backend.api import (
@@ -18,6 +20,8 @@ from backend.api import (
     diagnostic,
     covert_ops_agent,
     aireplay,
+    forge,
+    assistant,
 )
 from backend.routes import networks as route_networks
 from backend.routes import settings as route_settings
@@ -25,6 +29,9 @@ from backend.routes import nic as route_nic
 
 from backend.core.agent_manager import agent_manager
 from backend.db import init_db
+
+# 🧠 Load env vars (e.g., ZEUSNET_MODE)
+load_dotenv()
 
 # 🚀 FastAPI app
 app = FastAPI(
@@ -54,6 +61,8 @@ def read_root():
         "command": "/api/command",
         "export_csv": "/api/export/csv",
         "mode": "/api/settings/mode",
+        "forge": "/api/forge/send",
+        "assistant": "/api/assistant/chat",
     }
 
 # API Routers (always /api prefix)
@@ -68,6 +77,8 @@ app.include_router(nic.router, prefix="/api")
 app.include_router(diagnostic.router, prefix="/api")
 app.include_router(covert_ops_agent.router, prefix="/api")
 app.include_router(aireplay.router, prefix="/api")
+app.include_router(forge.router, prefix="/api")
+app.include_router(assistant.router, prefix="/api")
 
 # Custom SQLAlchemy routes (for legacy/extra DB stuff)
 app.include_router(route_networks.router, prefix="/api")
@@ -77,5 +88,7 @@ app.include_router(route_nic.router)
 # Startup: DB and C2 bus
 @app.on_event("startup")
 def _startup():
+    configure_logging()
+    logger.info("Starting backend services")
     init_db()
     agent_manager.start_all()

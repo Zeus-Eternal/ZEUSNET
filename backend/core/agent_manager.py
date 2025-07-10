@@ -30,9 +30,7 @@ class AgentManager:
                     start_fn()
                     logger.info("Started %s", agent.__class__.__name__)
                 except Exception as exc:
-                    logger.error(
-                        "Failed to start %s: %s", agent.__class__.__name__, exc
-                    )
+                    logger.error("Failed to start %s: %s", agent.__class__.__name__, exc)
 
     def stop_all(self) -> None:
         """Stop agents that expose a ``stop`` method."""

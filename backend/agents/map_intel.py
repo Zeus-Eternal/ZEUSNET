@@ -10,31 +10,50 @@ import logging
 logger = logging.getLogger("zeusnet.map_intel")
 
 
+from collections import deque
+from typing import Deque
+
+
 class MapIntelligence:
     """Produce GeoJSON heat-map chunks for the UI."""
+    def __init__(self, history_size: int = 100) -> None:
+        self.history_size = history_size
+        self._recent: Deque[dict] = deque(maxlen=history_size)
+    def process_event(self, data: dict) -> dict:
+        """Translate a signal event into a GeoJSON Feature.
 
-    def __init__(self) -> None:
-        self.features: list[dict] = []
+        Parameters
+        ----------
+        data: dict
+            Event data containing ``lat`` and ``lon`` keys either at the top
+            level or under ``payload``.
 
-    def process_event(self, data: dict) -> None:
-        """Convert a signal event into a GeoJSON feature."""
-        lat = data.get("lat") or data.get("latitude")
-        lon = data.get("lon") or data.get("longitude")
+        Returns
+        -------
+        dict
+            GeoJSON Feature representing the event.
+        """
+
+        payload = data.get("payload", data)
+        lat = payload.get("lat")
+        lon = payload.get("lon")
         if lat is None or lon is None:
-            logger.debug("Event missing coordinates: %s", data)
-            return
+            raise ValueError("Event must include 'lat' and 'lon' coordinates")
 
+        properties = {k: v for k, v in payload.items() if k not in {"lat", "lon"}}
         feature = {
             "type": "Feature",
             "geometry": {"type": "Point", "coordinates": [lon, lat]},
-            "properties": {
-                k: v
-                for k, v in data.items()
-                if k not in {"lat", "lon", "latitude", "longitude"}
-            },
+            "properties": properties,
         }
-        self.features.append(feature)
+        self._recent.append(feature)
+        return feature
+
+    def get_recent_features(self) -> list[dict]:
+        """Return the most recently processed GeoJSON features."""
+
+        return list(self._recent)
 
     def start(self) -> None:
-        """Initialize data structures or background tasks."""
-        logger.info("MapIntelligence started")
+        """Start background processing (currently a stub)."""
+        pass

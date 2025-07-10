@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+"""Utility for launching a simple aireplay-ng deauthentication attack.
+
+This script wraps the ``aireplay-ng`` command and exposes a small CLI for
+testing wireless deauth floods.  It requires the user to provide the target
+station MAC address, the access point MAC address and the monitor mode
+interface.  Use the ``--count`` flag to control how many deauth packets are
+sent.  The output from ``aireplay-ng`` is captured and printed.
+"""
 
 import subprocess
 import argparse

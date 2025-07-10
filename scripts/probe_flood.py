@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+"""Generate a flood of Wi-Fi probe requests using Scapy.
+
+The script crafts random SSIDs and repeatedly sends probe request frames to a
+target MAC address.  It can be useful for stress-testing or demonstrating
+wireless scanning behavior.  Run with ``--target`` to specify the destination
+MAC and ``--iface`` for the monitor mode interface.
+"""
 
 import time
 import random

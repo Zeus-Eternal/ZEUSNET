@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+"""Send a continuous stream of TCP SYN packets using Scapy.
+
+This example script demonstrates a basic SYN flood.  It randomly selects source
+and destination ports for each packet sent to the target IP.  Provide the
+``--target`` argument to choose the destination address and ``--iface`` to select
+the network interface.  Use with caution and only in controlled environments.
+"""
 
 import random
 import argparse

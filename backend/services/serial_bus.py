@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 MAX_CONSECUTIVE_ERRORS = 5
 ERROR_BACKOFF_SEC = 2
 
+
 def safe_parse_serial_line(raw: bytes) -> dict | None:
     try:
         decoded = raw.decode("utf-8").strip()
@@ -17,6 +18,7 @@ def safe_parse_serial_line(raw: bytes) -> dict | None:
     except json.JSONDecodeError as e:
         logger.warning(f"[SerialBus] JSON parse error: {e} | Raw: {raw}")
         return None
+
 
 class SerialBus:
     def __init__(self, port, baudrate=115200):
@@ -29,7 +31,9 @@ class SerialBus:
                 raw = self.ser.readline()
 
                 if not raw:
-                    logger.error("[SerialBus] Read error: empty line or device not responding")
+                    logger.error(
+                        "[SerialBus] Read error: empty line or device not responding"
+                    )
                     self._increment_error()
                     continue
 
@@ -46,6 +50,8 @@ class SerialBus:
     def _increment_error(self):
         self.error_count += 1
         if self.error_count >= MAX_CONSECUTIVE_ERRORS:
-            logger.critical(f"[SerialBus] {self.error_count} consecutive errors, backing off for {ERROR_BACKOFF_SEC}s")
+            logger.critical(
+                f"[SerialBus] {self.error_count} consecutive errors, backing off for {ERROR_BACKOFF_SEC}s"
+            )
             time.sleep(ERROR_BACKOFF_SEC)
             self.error_count = 0

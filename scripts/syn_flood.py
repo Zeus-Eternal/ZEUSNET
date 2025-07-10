@@ -4,6 +4,7 @@ import random
 import argparse
 from scapy.all import IP, TCP, send
 
+
 def main():
     parser = argparse.ArgumentParser(description="Scapy SYN Flood")
     parser.add_argument("--target", help="Target IP address", required=True)
@@ -26,6 +27,7 @@ def main():
                 print(f"[+] Sent {count} SYNs...")
     except KeyboardInterrupt:
         print(f"\n[!] Stopped. Total SYNs sent: {count}")
+
 
 if __name__ == "__main__":
     main()

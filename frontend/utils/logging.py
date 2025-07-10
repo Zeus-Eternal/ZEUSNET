@@ -17,5 +17,3 @@ def configure_logging(
         Log message format.
     """
     logging.basicConfig(level=level, format=fmt)
-
-

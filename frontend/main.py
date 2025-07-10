@@ -14,6 +14,7 @@ if __package__ is None:
     sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from frontend.utils.path_setup import ensure_repo_root_on_path
+
 ensure_repo_root_on_path()
 
 # --- CSS LOADER: Load custom style before any windows ---
@@ -33,7 +34,7 @@ if os.path.exists(CSS_PATH):
 def main() -> int:
     from frontend.app import ZeusApp
     from frontend.utils.logging import configure_logging
-    
+
     configure_logging()
     logger = logging.getLogger(__name__)
     logger.info("Launching ZeusNet GTK Frontend...")

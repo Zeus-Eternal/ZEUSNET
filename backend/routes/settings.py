@@ -16,9 +16,6 @@ async def update_mode(req: Request):
     return {"status": "ok", "mode": mode}
 
 
-
-
-
 @router.post("/api/settings/serial_port")
 async def set_serial_port(req: Request):
     body = await req.json()

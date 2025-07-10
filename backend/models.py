@@ -2,6 +2,7 @@ from sqlalchemy import Column, DateTime, Integer, String
 from datetime import datetime
 from backend.db import Base
 
+
 class WiFiScan(Base):
     __tablename__ = "wifi_scans"
 
@@ -23,6 +24,7 @@ class WiFiScan(Base):
             "channel": self.channel,
             "timestamp": self.timestamp,
         }
+
 
 class DeviceSeen(Base):
     __tablename__ = "device_seen"
@@ -46,6 +48,7 @@ class DeviceSeen(Base):
             "signal_strength": self.signal_strength,
         }
 
+
 class Device(Base):
     __tablename__ = "devices"
 
@@ -61,6 +64,7 @@ class Device(Base):
             "first_seen": self.first_seen,
             "last_seen": self.last_seen,
         }
+
 
 class Alert(Base):
     __tablename__ = "alerts"

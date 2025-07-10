@@ -1,7 +1,8 @@
 """MapIntelligence agent.
 
-Generates map overlays from processed signal events. This is currently a
-placeholder that exposes the expected interface only.
+This experimental module will eventually generate map overlays from
+processed signal events. It currently exists as a placeholder and is not
+used in production.
 """
 
 
@@ -11,7 +12,6 @@ from typing import Deque
 
 class MapIntelligence:
     """Produce GeoJSON heat-map chunks for the UI."""
-
     def __init__(self, history_size: int = 100) -> None:
         self.history_size = history_size
         self._recent: Deque[dict] = deque(maxlen=history_size)
@@ -52,5 +52,5 @@ class MapIntelligence:
         return list(self._recent)
 
     def start(self) -> None:
-        """Start background processing (stub)."""
+        """Start background processing (currently a stub)."""
         pass

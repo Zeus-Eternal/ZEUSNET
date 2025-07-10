@@ -16,9 +16,11 @@ from typing import Deque
 
 class MapIntelligence:
     """Produce GeoJSON heat-map chunks for the UI."""
+
     def __init__(self, history_size: int = 100) -> None:
         self.history_size = history_size
         self._recent: Deque[dict] = deque(maxlen=history_size)
+
     def process_event(self, data: dict) -> dict:
         """Translate a signal event into a GeoJSON Feature.
 

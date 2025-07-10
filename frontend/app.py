@@ -10,7 +10,6 @@ from .views.attack_view import AttackView
 from .views.settings_view import SettingsView
 from .views.dashboard_view import DashboardView
 
-
 class ZeusApp(Gtk.Application):
     """Main GTK application class."""
 

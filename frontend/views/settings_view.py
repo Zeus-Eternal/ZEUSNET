@@ -7,7 +7,7 @@ import logging
 from serial.tools import list_ports
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, GLib  # noqa: E402
+from gi.repository import Gtk, GLib 
 
 from backend.services.api_client import SettingsAPIClient
 

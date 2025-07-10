@@ -8,7 +8,6 @@ from typing import Dict
 
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk, GLib
-
 from ..widgets.network_list import NetworkList
 from backend.services.api_client import NetworkAPIClient
 

@@ -3,19 +3,12 @@
 """Attack tab with prefillable target controls."""
 
 import gi
+
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk, GObject
 
-try:
-    from backend.services.api_client import AttackAPIClient
-except ImportError:
-    import os, sys
-    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-    PARENT_DIR = os.path.dirname(CURRENT_DIR)
-    GRANDPARENT_DIR = os.path.dirname(PARENT_DIR)
-    if GRANDPARENT_DIR not in sys.path:
-        sys.path.insert(0, GRANDPARENT_DIR)
-    from backend.services.api_client import AttackAPIClient
+from backend.services.api_client import AttackAPIClient
+
 
 class AttackView(Gtk.Box):
     """
@@ -121,13 +114,15 @@ class AttackView(Gtk.Box):
 
     def prefill_target(self, net_info):
         """Prefill all target fields from provided network info."""
-        self.ssid_entry.set_text(net_info.get('ssid', ''))
-        self.bssid_entry.set_text(net_info.get('bssid', ''))
-        self.channel_entry.set_text(str(net_info.get('channel', '')))
-        self.enc_entry.set_text(net_info.get('encryption', ''))
-        self.quality_entry.set_text(str(net_info.get('quality', '')))
-        self.rssi_entry.set_text(str(net_info.get('rssi', '')))
-        self.status_label.set_text("Target loaded. Ready to launch your diabolical plan.")
+        self.ssid_entry.set_text(net_info.get("ssid", ""))
+        self.bssid_entry.set_text(net_info.get("bssid", ""))
+        self.channel_entry.set_text(str(net_info.get("channel", "")))
+        self.enc_entry.set_text(net_info.get("encryption", ""))
+        self.quality_entry.set_text(str(net_info.get("quality", "")))
+        self.rssi_entry.set_text(str(net_info.get("rssi", "")))
+        self.status_label.set_text(
+            "Target loaded. Ready to launch your diabolical plan."
+        )
 
     def on_attack_clicked(self, _btn):
         """Launch selected attack via backend API."""
@@ -154,4 +149,3 @@ class AttackView(Gtk.Box):
             on_success=_on_success,
             on_error=_on_error,
         )
-

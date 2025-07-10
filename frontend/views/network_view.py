@@ -9,26 +9,18 @@ from typing import Dict
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk, GLib
 
-try:
-    from ..widgets.network_list import NetworkList
-    from backend.services.api_client import NetworkAPIClient
-except ImportError:
-    import os, sys
-    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-    PARENT_DIR = os.path.dirname(CURRENT_DIR)
-    GRANDPARENT_DIR = os.path.dirname(PARENT_DIR)
-    if GRANDPARENT_DIR not in sys.path:
-        sys.path.insert(0, GRANDPARENT_DIR)
-    from frontend.widgets.network_list import NetworkList
-    from backend.services.api_client import NetworkAPIClient
+from ..widgets.network_list import NetworkList
+from backend.services.api_client import NetworkAPIClient
 
 logger = logging.getLogger(__name__)
+
 
 class NetworkView(Gtk.Box):
     """
     Displays available networks with filter controls and double-click-to-attack UX.
     Emits target info to main window/controller for prefilled attack tab.
     """
+
     def __init__(self, parent_controller=None) -> None:
         """
         Args:
@@ -92,19 +84,21 @@ class NetworkView(Gtk.Box):
             self.status_label.set_text("Failed to load networks")
 
         self.api_client.get_networks_async(
-            filters=filters,
-            on_success=_on_success,
-            on_error=_on_error
+            filters=filters, on_success=_on_success, on_error=_on_error
         )
 
     def on_target_selected(self, widget, net_info):
         logger.info(f"Target selected: {net_info}")
         # Use parent_controller if present, else root
-        if self.parent_controller and hasattr(self.parent_controller, "switch_to_attack_tab"):
+        if self.parent_controller and hasattr(
+            self.parent_controller, "switch_to_attack_tab"
+        ):
             self.parent_controller.switch_to_attack_tab(net_info)
         else:
             root = self.get_root()
             if root and hasattr(root, "switch_to_attack_tab"):
                 root.switch_to_attack_tab(net_info)
             else:
-                logger.warning("No attack tab handler found for double-click target event.")
+                logger.warning(
+                    "No attack tab handler found for double-click target event."
+                )

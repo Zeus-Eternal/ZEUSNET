@@ -28,6 +28,10 @@ class AttackService:
             return ["echo", "rogue_ap"]
         if mode == "pmkid":
             return ["echo", "pmkid"]
+        if mode == "probe":
+            return ["python3", "scripts/probe_flood.py", "--target", target or "00:00:00:00:00:00", "--iface", "wlan0"]
+        if mode == "syn_flood":
+            return ["python3", "scripts/syn_flood.py", "--target", target or "127.0.0.1", "--iface", "wlan0"]
         if mode == "swarm":
             return ["echo", "swarm"]
         if mode == "survey":

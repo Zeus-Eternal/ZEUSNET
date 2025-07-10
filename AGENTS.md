@@ -9,7 +9,7 @@
 |-----------------|-------------|-----------------------------------------------------------------------------------------------|----------------------------------------------|
 | ZeusRelay       | MQTT Agent  | Bridges MQTT ⇆ Serial traffic for remote command & control, status heartbeat propagation      | `backend/agents/zeus_relay.py`               |
 | SignalWatcher   | Sensor AI   | Listens to ESP32 RSSI / SSID data, de-noises, timestamps and streams into the DB              | `backend/agents/signal_watcher.py`           |
-| MapIntelligence | Visual AI   | Converts live network events into geo-referenced overlays for the UI heat-map                 | `backend/agents/map_intel.py`                |
+| MapIntelligence | Visual AI   | ⚙️ Planned - convert events to heat-map overlays                 | `backend/agents/map_intel.py`               |
 | AnomalyGuard    | Defense AI  | Performs statistical / ML anomaly detection on signal metrics                                 | `backend/agents/anomaly_guard.py`            |
 | CommandHub      | Core Agent  | Central intent router: interprets user inputs & dispatches tasks to other agents              | `backend/agents/command_hub.py`              |
 
@@ -138,14 +138,14 @@ mosquitto_pub -t zeusnet/from_esp -m '{"ssid":"Test","bssid":"aa:bb","rssi":-42,
 
 **Type**: `Synthesizer`
 **ID**: `agent_mapintel`
-**Status**: 🟢 Active
-**Version**: `v1.0.0`
+**Status**: ⚙️ Planned
+**Version**: `v0.1.0`
 **Scope**: `Hybrid`
-**Visibility**: `User-facing`
+**Visibility**: `Experimental`
 
 ### 🎯 Purpose
 
-Transforms processed signal events into GeoJSON heat-layers for the React or GTK front-end, enabling a real-time map overlay.
+Transforms processed signal events into GeoJSON heat-layers for the React or GTK front-end, enabling a real-time map overlay. *(Not yet implemented)*
 
 ### 🔧 Capabilities
 
@@ -273,6 +273,7 @@ curl -X POST http://localhost:8000/api/command -d '{"opcode":1,"payload":{"scan"
 | ReconBot      | Recon Agent  | ⚙️ Planned | Actively sweeps all channels & logs new BSSIDs   |
 | IntelBroker   | Meta Agent   | ⚙️ Planned | Aggregates intel from multiple ZeusNet instances |
 | ZeusCommander | Master Agent | ⚙️ Planned | Multi-node orchestration & advanced task graph   |
+| MapIntelligence | Visual AI   | ⚙️ Planned | Creates GeoJSON overlays for the heatmap dashboard |
 
 ---
 

@@ -1,6 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+import logging
+
+from backend.utils.logging import configure_logging
+
+logger = logging.getLogger(__name__)
 
 # 🧠 Real ZeusNet routers
 from backend.api import (
@@ -77,5 +82,7 @@ app.include_router(route_nic.router)
 # Startup: DB and C2 bus
 @app.on_event("startup")
 def _startup():
+    configure_logging()
+    logger.info("Starting backend services")
     init_db()
     start_bus()

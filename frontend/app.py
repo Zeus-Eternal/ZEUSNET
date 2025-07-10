@@ -6,6 +6,8 @@ gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk
 from .views.network_view import NetworkView
 from .views.attack_view import AttackView
+from .views.packetforge_view import PacketForgeView
+from .views.aiassistant_view import AIAssistantView
 from .views.settings_view import SettingsView
 from .views.dashboard_view import DashboardView
 

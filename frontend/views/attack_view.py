@@ -6,16 +6,14 @@ import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk, GObject
 
-try:
-    from backend.services.api_client import AttackAPIClient
-except ImportError:
+if __package__ is None:
     import os, sys
-    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-    PARENT_DIR = os.path.dirname(CURRENT_DIR)
-    GRANDPARENT_DIR = os.path.dirname(PARENT_DIR)
-    if GRANDPARENT_DIR not in sys.path:
-        sys.path.insert(0, GRANDPARENT_DIR)
-    from backend.services.api_client import AttackAPIClient
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+
+from frontend.utils.path_setup import ensure_repo_root_on_path
+ensure_repo_root_on_path()
+
+from backend.services.api_client import AttackAPIClient
 
 class AttackView(Gtk.Box):
     """

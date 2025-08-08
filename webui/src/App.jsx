@@ -18,7 +18,10 @@ export default function App() {
   const [logLines, setLogLines] = useState([]);
 
   const log = (msg) =>
-    setLogLines((lines) => [...lines, `[${new Date().toLocaleTimeString()}] ${msg}`]);
+    setLogLines((lines) => [
+      ...lines,
+      `[${new Date().toLocaleTimeString()}] ${msg}`,
+    ]);
 
   const renderTab = () => {
     switch (activeTab) {

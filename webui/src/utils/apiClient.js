@@ -15,7 +15,7 @@ apiClient.interceptors.response.use(
   (err) => {
     const message = err.response?.data?.detail || err.message;
     return Promise.reject(new Error(message));
-  }
+  },
 );
 
 export default apiClient;

@@ -11,7 +11,7 @@ export default function NetworkOpsPanel({ log }) {
     e.preventDefault();
     setLoading(true);
     log(
-      `\ud83d\udce1 Initiating ${operation.replace("_", " ").toUpperCase()} on ${targetId} (Ch ${channel})`
+      `\ud83d\udce1 Initiating ${operation.replace("_", " ").toUpperCase()} on ${targetId} (Ch ${channel})`,
     );
 
     try {

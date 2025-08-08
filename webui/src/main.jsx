@@ -7,5 +7,5 @@ import { SettingsProvider } from "./utils/SettingsContext";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <SettingsProvider>
     <App />
-  </SettingsProvider>
+  </SettingsProvider>,
 );
